@@ -11,6 +11,27 @@ def web():
     headers = {
         'X-Server': 'MyFlaskServer/1.0',
         'Content-Type': 'text/plain; charset=utf-8',
+        'X-Developer': 'Арышева Арина Юрьевна',
+        'X-Version': '1.0.0'
+    }
+    
+    return """<!doctype html>
+<html>
+<body>
+<h1>web-сервер на flask</h1>
+<p><a href="/author">Перейти к информации об авторе</a></p>
+<p><a href="/lab1/image">Посмотреть картинку</a></p>
+<p><a href="/lab1/visit">Счетчик посещений</a></p>
+<p><a href="/info">Перенаправление на автора</a></p>
+<p><a href="/created">Страница с кодом 201</a></p>
+</body>
+</html>""", 200, headers
+
+@app.route("/web-html")
+def web_html():
+    # Версия с HTML content-type для нормального отображения
+    headers = {
+        'X-Server': 'MyFlaskServer/1.0',
         'X-Developer': 'Арышева Арина Юрьевна'
     }
     
@@ -23,6 +44,7 @@ def web():
 <p><a href="/lab1/visit">Счетчик посещений</a></p>
 <p><a href="/info">Перенаправление на автора</a></p>
 <p><a href="/created">Страница с кодом 201</a></p>
+<p><a href="/web">Посмотреть версию с text/plain</a></p>
 </body>
 </html>""", 200, headers
 
@@ -38,24 +60,30 @@ def author():
 <p>Студент: """ + name + """</p>
 <p>Группа: """ + group + """</p>
 <p>Факультет: """ + faculty + """</p>
-<p><a href="/web">Вернуться на главную</a></p>
+<p><a href="/web-html">Вернуться на главную</a></p>
 </body>
 </html>"""
 
 @app.route("/lab1/image")
 def image():
-    # Получаем путь к картинке с помощью url_for
+    # Получаем путь к картинке и CSS с помощью url_for
     image_path = url_for('static', filename='image.jpg')
+    css_path = url_for('static', filename='lab1.css')
     
-    return '''<!doctype html>
+    return f'''<!doctype html>
 <html>
 <head>
     <title>Картинка</title>
+    <link rel="stylesheet" href="{css_path}">
 </head>
 <body>
-    <h1>Моя картинка</h1>
-    <img src="''' + image_path + '''" alt="Мое изображение" width="500">
-    <p><a href="/web">Вернуться на главную</a></p>
+    <div class="container">
+        <h1>Моя картинка</h1>
+        <div class="image-container">
+            <img src="{image_path}" alt="Мое изображение">
+        </div>
+        <a href="/web-html" class="back-link">Вернуться на главную</a>
+    </div>
 </body>
 </html>'''
 
@@ -78,7 +106,7 @@ def visit():
 <p>Текущая дата и время: """ + str(current_time) + """</p>
 <p>IP-адрес клиента: """ + client_ip + """</p>
 <p>Имя хоста веб-сервера: """ + server_name + """</p>
-<p><a href="/web">Вернуться на главную</a></p>
+<p><a href="/web-html">Вернуться на главную</a></p>
 </body>
 </html>"""
 
@@ -102,6 +130,6 @@ def page_not_found(error):
 <body>
     <h1>Ошибка 404 - Страница не найдена</h1>
     <p>Запрашиваемая страница не существует.</p>
-    <p>Пожалуйста, проверьте URL или перейдите на <a href="/web">главную страницу</a>.</p>
+    <p>Пожалуйста, проверьте URL или перейдите на <a href="/web-html">главную страницу</a>.</p>
 </body>
 </html>""", 404
