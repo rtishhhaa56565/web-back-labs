@@ -181,17 +181,29 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
 </html>"""
 
 # ... остальные существующие обработчики (web, web-html, author, image, visit, info, created) ...
-
 @app.errorhandler(404)
 def page_not_found(error):
     return """<!doctype html>
 <html>
 <head>
-    <title>Страница не найдена</title>
+    <title>404</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            text-align: center; 
+            padding: 50px; 
+            background: #f8f9fa;
+        }
+        h1 { color: #dc3545; }
+        img { width: 300px; height: auto; margin: 20px; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <h1>Ошибка 404 - Страница не найдена</h1>
-    <p>Запрашиваемая страница не существует.</p>
-    <p>Пожалуйста, проверьте URL или перейдите на <a href="/">главную страницу</a>.</p>
+    <h1>404 - Страница не найдена</h1>
+    <img src="/static/images (3).jpg" alt="Ошибка">
+    <p>Такой страницы не существует.</p>
+    <p><a href="/">Вернуться на главную</a></p>
 </body>
 </html>""", 404
