@@ -16,6 +16,7 @@ def web():
 <p><a href="/lab1/image">Посмотреть картинку</a></p>
 <p><a href="/lab1/visit">Счетчик посещений</a></p>
 <p><a href="/info">Перенаправление на автора</a></p>
+<p><a href="/created">Страница с кодом 201</a></p>
 </body>
 </html>"""
 
@@ -79,3 +80,8 @@ def visit():
 def info():
     # Перенаправляем на страницу автора
     return redirect("/author")
+
+@app.route("/created")
+def created():
+    # Возвращаем код 201 Created
+    return "Ресурс успешно создан", 201
