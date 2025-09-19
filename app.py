@@ -2,6 +2,9 @@ from flask import Flask, url_for
 
 app = Flask(__name__)
 
+# Переменная для подсчета посещений
+visit_count = 0
+
 @app.route("/web")
 def web():
     return """<!doctype html>
@@ -10,6 +13,7 @@ def web():
 <h1>web-сервер на flask</h1>
 <p><a href="/author">Перейти к информации об авторе</a></p>
 <p><a href="/lab1/image">Посмотреть картинку</a></p>
+<p><a href="/lab1/visit">Счетчик посещений</a></p>
 </body>
 </html>"""
 
@@ -45,3 +49,16 @@ def image():
     <p><a href="/web">Вернуться на главную</a></p>
 </body>
 </html>'''
+
+@app.route("/lab1/visit")
+def visit():
+    global visit_count  # Указываем, что используем глобальную переменную
+    visit_count += 1
+    return """<!doctype html>
+<html>
+<body>
+<h1>Счетчик посещений</h1>
+<p>Количество посещений этой страницы: """ + str(visit_count) + """</p>
+<p><a href="/web">Вернуться на главную</a></p>
+</body>
+</html>"""
