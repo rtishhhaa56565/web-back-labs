@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, redirect
 import datetime
 
 app = Flask(__name__)
@@ -15,6 +15,7 @@ def web():
 <p><a href="/author">Перейти к информации об авторе</a></p>
 <p><a href="/lab1/image">Посмотреть картинку</a></p>
 <p><a href="/lab1/visit">Счетчик посещений</a></p>
+<p><a href="/info">Перенаправление на автора</a></p>
 </body>
 </html>"""
 
@@ -73,3 +74,8 @@ def visit():
 <p><a href="/web">Вернуться на главную</a></p>
 </body>
 </html>"""
+
+@app.route("/info")
+def info():
+    # Перенаправляем на страницу автора
+    return redirect("/author")
