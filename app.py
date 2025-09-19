@@ -13,8 +13,8 @@ def web():
 
 @app.route("/author")
 def author():
-    name = "Иванов Иван Иванович"
-    group = "ФБИ-80"
+    name = "Арышева Арина Юрьевна"
+    group = "ФБИ-34"
     faculty = "ФБ"
     
     return """<!doctype html>
