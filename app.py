@@ -85,3 +85,17 @@ def info():
 def created():
     # Возвращаем код 201 Created
     return "Ресурс успешно создан", 201
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return """<!doctype html>
+<html>
+<head>
+    <title>Страница не найдена</title>
+</head>
+<body>
+    <h1>Ошибка 404 - Страница не найдена</h1>
+    <p>Запрашиваемая страница не существует.</p>
+    <p>Пожалуйста, проверьте URL или перейдите на <a href="/web">главную страницу</a>.</p>
+</body>
+</html>""", 404
