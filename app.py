@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Переменная для подсчета посещений
 visit_count = 0
 
-@app.route("/web")
+@app.route("/lab1/web")
 def web():
     headers = {
         'X-Server': 'MyFlaskServer/1.0',
@@ -19,15 +19,15 @@ def web():
 <html>
 <body>
 <h1>web-сервер на flask</h1>
-<p><a href="/author">Перейти к информации об авторе</a></p>
+<p><a href="/lab1/author">Перейти к информации об авторе</a></p>
 <p><a href="/lab1/image">Посмотреть картинку</a></p>
 <p><a href="/lab1/visit">Счетчик посещений</a></p>
-<p><a href="/info">Перенаправление на автора</a></p>
+<p><a href="/lab1/info">Перенаправление на автора</a></p>
 <p><a href="/created">Страница с кодом 201</a></p>
 </body>
 </html>""", 200, headers
 
-@app.route("/web-html")
+@app.route("/lab1/web-html")
 def web_html():
     # Версия с HTML content-type для нормального отображения
     headers = {
@@ -39,16 +39,16 @@ def web_html():
 <html>
 <body>
 <h1>web-сервер на flask</h1>
-<p><a href="/author">Перейти к информации об авторе</a></p>
+<p><a href="/lab1/author">Перейти к информации об авторе</a></p>
 <p><a href="/lab1/image">Посмотреть картинку</a></p>
 <p><a href="/lab1/visit">Счетчик посещений</a></p>
-<p><a href="/info">Перенаправление на автора</a></p>
+<p><a href="/lab1/info">Перенаправление на автора</a></p>
 <p><a href="/created">Страница с кодом 201</a></p>
-<p><a href="/web">Посмотреть версию с text/plain</a></p>
+<p><a href="/lab1/web">Посмотреть версию с text/plain</a></p>
 </body>
 </html>""", 200, headers
 
-@app.route("/author")
+@app.route("/lab1/author")
 def author():
     name = "Арышева Арина Юрьевна"
     group = "ФБИ-34"
@@ -60,7 +60,7 @@ def author():
 <p>Студент: """ + name + """</p>
 <p>Группа: """ + group + """</p>
 <p>Факультет: """ + faculty + """</p>
-<p><a href="/web-html">Вернуться на главную</a></p>
+<p><a href="/lab1/web-html">Вернуться на главную</a></p>
 </body>
 </html>"""
 
@@ -82,7 +82,7 @@ def image():
         <div class="image-container">
             <img src="{image_path}" alt="Мое изображение">
         </div>
-        <a href="/web-html" class="back-link">Вернуться на главную</a>
+        <a href="/lab1/web-html" class="back-link">Вернуться на главную</a>
     </div>
 </body>
 </html>'''
@@ -107,7 +107,7 @@ def visit():
 <p>IP-адрес клиента: """ + client_ip + """</p>
 <p>Имя хоста веб-сервера: """ + server_name + """</p>
 <p><a href="/lab1/visit/reset">Очистить счетчик</a></p>
-<p><a href="/web-html">Вернуться на главную</a></p>
+<p><a href="/lab1/web-html">Вернуться на главную</a></p>
 </body>
 </html>"""
 
@@ -117,10 +117,10 @@ def reset_visit_counter():
     visit_count = 0
     return redirect("/lab1/visit")
 
-@app.route("/info")
+@app.route("/lab1/info")
 def info():
     # Перенаправляем на страницу автора
-    return redirect("/author")
+    return redirect("/lab1/author")
 
 @app.route("/created")
 def created():
@@ -137,6 +137,6 @@ def page_not_found(error):
 <body>
     <h1>Ошибка 404 - Страница не найдена</h1>
     <p>Запрашиваемая страница не существует.</p>
-    <p>Пожалуйста, проверьте URL или перейдите на <a href="/web-html">главную страницу</a>.</p>
+    <p>Пожалуйста, проверьте URL или перейдите на <a href="/lab1/web-html">главную страницу</a>.</p>
 </body>
 </html>""", 404
