@@ -81,7 +81,7 @@ def unauthorized():
 </head>
 <body>
     <h1>401 Unauthorized</h1>
-    <p>Для доступа к запрашиваемому ресурсу требуется аутентификация.</p>
+    <p>Для доaccess к запрашиваемому ресурсу требуется аутентификация.</p>
     <p><a href="/http-codes">Вернуться к списку кодов</a></p>
     <p><a href="/">Вернуться на главную</a></p>
 </body>
@@ -180,7 +180,107 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
 </body>
 </html>"""
 
-# ... остальные существующие обработчики (web, web-html, author, image, visit, info, created) ...
+# Обработчик, который вызывает ошибку на сервере
+@app.route("/error-test")
+def error_test():
+    # Вызываем ошибку деления на ноль
+    result = 10 / 0  # Это вызовет ZeroDivisionError
+    return "Эта строка никогда не будет показана"
+
+# Альтернативный вариант с конкатенацией числа и строки
+@app.route("/error-test2")
+def error_test2():
+    number = 42
+    text = "текст"
+    result = number + text  # Это вызовет TypeError
+    return result
+
+# Обработчик ошибки 500
+@app.errorhandler(500)
+def internal_server_error(error):
+    return """<!doctype html>
+<html>
+<head>
+    <title>500 - Ошибка сервера</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #dc3545; 
+            margin-bottom: 20px;
+        }
+        .error-code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .technical-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">500</div>
+        <h1>Внутренняя ошибка сервера</h1>
+        
+        <p>На сервере произошла непредвиденная ошибка. Приносим извинения за неудобства.</p>
+        <p>Наша команда уже уведомлена о проблеме и работает над её решением.</p>
+        
+        <div>
+            <a href="/" class="btn">Вернуться на главную</a>
+            <a href="javascript:history.back()" class="btn">Назад</a>
+        </div>
+        
+        <div class="technical-info">
+            <strong>Техническая информация:</strong><br>
+            Произошла ошибка во время обработки вашего запроса.<br>
+            Время: {current_time}<br>
+            Ошибка: {error_type}
+        </div>
+    </div>
+</body>
+</html>""".format(
+        current_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        error_type=type(error).__name__
+    ), 500
+
 @app.errorhandler(404)
 def page_not_found(error):
     return """<!doctype html>
@@ -207,3 +307,36 @@ def page_not_found(error):
     <p><a href="/">Вернуться на главную</a></p>
 </body>
 </html>""", 404
+@app.route("/lab1/image")
+def image():
+    # Получаем путь к картинке и CSS с помощью url_for
+    image_path = url_for('static', filename='image.jpg')
+    css_path = url_for('static', filename='lab1.css')
+    
+    # Кастомные заголовки
+    headers = {
+        'Content-Language': 'ru',  # Язык контента - русский
+        'X-Image-Processor': 'Flask-Image-Service/1.0',
+        'X-Custom-Header': 'Специальный заголовок для лабораторной работы',
+        'X-Student-Info': 'Арышева Арина Юрьевна, ФБИ-34'
+    }
+    
+    return f'''<!doctype html>
+<html>
+<head>
+    <title>Картинка</title>
+    <link rel="stylesheet" href="{css_path}">
+</head>
+<body>
+    <div class="container">
+        <h1>Моя картинка</h1>
+        <div class="image-container">
+            <img src="{image_path}" alt="Мое изображение">
+        </div>
+        <a href="/lab1/web-html" class="back-link">Вернуться к первой лабораторной</a>
+        <a href="/lab1" class="back-link">Вернуться к меню лабораторной</a>
+        <a href="/" class="back-link">Вернуться на главную</a>
+    </div>
+</body>
+</html>''', 200, headers
+
