@@ -1,4 +1,5 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, request
+import datetime
 
 app = Flask(__name__)
 
@@ -54,11 +55,21 @@ def image():
 def visit():
     global visit_count  # Указываем, что используем глобальную переменную
     visit_count += 1
+    
+    # Получаем служебную информацию
+    current_time = datetime.datetime.now()
+    client_ip = request.remote_addr
+    server_name = request.host
+    
     return """<!doctype html>
 <html>
 <body>
 <h1>Счетчик посещений</h1>
 <p>Количество посещений этой страницы: """ + str(visit_count) + """</p>
+<h2>Служебная информация:</h2>
+<p>Текущая дата и время: """ + str(current_time) + """</p>
+<p>IP-адрес клиента: """ + client_ip + """</p>
+<p>Имя хоста веб-сервера: """ + server_name + """</p>
 <p><a href="/web">Вернуться на главную</a></p>
 </body>
 </html>"""
