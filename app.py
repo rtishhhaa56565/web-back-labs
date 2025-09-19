@@ -6,6 +6,34 @@ app = Flask(__name__)
 # Переменная для подсчета посещений
 visit_count = 0
 
+@app.route("/")
+@app.route("/index")
+def index():
+    return """<!doctype html>
+<html>
+<head>
+    <title>НГТУ, ФБ, Лабораторные работы</title>
+    <link rel="stylesheet" href=""" + url_for('static', filename='main.css') + """>
+</head>
+<body>
+    <header>
+        <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
+    </header>
+    
+    <main>
+        <nav>
+            <ul>
+                <li><a href="/lab1/web-html">Первая лабораторная</a></li>
+            </ul>
+        </nav>
+    </main>
+    
+    <footer>
+        <p>Арышева Арина Юрьевна, ФБИ-34, 3 курс, 2025</p>
+    </footer>
+</body>
+</html>"""
+
 @app.route("/lab1/web")
 def web():
     headers = {
@@ -45,6 +73,7 @@ def web_html():
 <p><a href="/lab1/info">Перенаправление на автора</a></p>
 <p><a href="/created">Страница с кодом 201</a></p>
 <p><a href="/lab1/web">Посмотреть версию с text/plain</a></p>
+<p><a href="/">Вернуться на главную</a></p>
 </body>
 </html>""", 200, headers
 
@@ -60,7 +89,8 @@ def author():
 <p>Студент: """ + name + """</p>
 <p>Группа: """ + group + """</p>
 <p>Факультет: """ + faculty + """</p>
-<p><a href="/lab1/web-html">Вернуться на главную</a></p>
+<p><a href="/lab1/web-html">Вернуться к первой лабораторной</a></p>
+<p><a href="/">Вернуться на главную</a></p>
 </body>
 </html>"""
 
@@ -82,7 +112,8 @@ def image():
         <div class="image-container">
             <img src="{image_path}" alt="Мое изображение">
         </div>
-        <a href="/lab1/web-html" class="back-link">Вернуться на главную</a>
+        <a href="/lab1/web-html" class="back-link">Вернуться к первой лабораторной</a>
+        <a href="/" class="back-link">Вернуться на главную</a>
     </div>
 </body>
 </html>'''
@@ -107,7 +138,8 @@ def visit():
 <p>IP-адрес клиента: """ + client_ip + """</p>
 <p>Имя хоста веб-сервера: """ + server_name + """</p>
 <p><a href="/lab1/visit/reset">Очистить счетчик</a></p>
-<p><a href="/lab1/web-html">Вернуться на главную</a></p>
+<p><a href="/lab1/web-html">Вернуться к первой лабораторной</a></p>
+<p><a href="/">Вернуться на главную</a></p>
 </body>
 </html>"""
 
@@ -137,6 +169,6 @@ def page_not_found(error):
 <body>
     <h1>Ошибка 404 - Страница не найдена</h1>
     <p>Запрашиваемая страница не существует.</p>
-    <p>Пожалуйста, проверьте URL или перейдите на <a href="/lab1/web-html">главную страницу</a>.</p>
+    <p>Пожалуйста, проверьте URL или перейдите на <a href="/">главную страницу</a>.</p>
 </body>
 </html>""", 404
