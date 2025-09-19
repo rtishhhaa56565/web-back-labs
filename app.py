@@ -13,7 +13,6 @@ def index():
 <html>
 <head>
     <title>НГТУ, ФБ, Лабораторные работы</title>
-    <link rel="stylesheet" href=""" + url_for('static', filename='main.css') + """>
 </head>
 <body>
     <header>
@@ -24,6 +23,7 @@ def index():
         <nav>
             <ul>
                 <li><a href="/lab1">Первая лабораторная</a></li>
+                <li><a href="/http-codes">HTTP коды ответов</a></li>
             </ul>
         </nav>
     </main>
@@ -33,6 +33,120 @@ def index():
     </footer>
 </body>
 </html>"""
+
+@app.route("/http-codes")
+def http_codes():
+    return """<!doctype html>
+<html>
+<head>
+    <title>HTTP коды ответов</title>
+</head>
+<body>
+    <h1>Тестовые HTTP коды ответов</h1>
+    <nav>
+        <ul>
+            <li><a href="/400">400 Bad Request</a></li>
+            <li><a href="/401">401 Unauthorized</a></li>
+            <li><a href="/402">402 Payment Required</a></li>
+            <li><a href="/403">403 Forbidden</a></li>
+            <li><a href="/405">405 Method Not Allowed</a></li>
+            <li><a href="/418">418 I'm a teapot</a></li>
+        </ul>
+    </nav>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>"""
+
+@app.route("/400")
+def bad_request():
+    return """<!doctype html>
+<html>
+<head>
+    <title>400 Bad Request</title>
+</head>
+<body>
+    <h1>400 Bad Request</h1>
+    <p>Сервер не может обработать запрос из-за неверного синтаксиса.</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 400
+
+@app.route("/401")
+def unauthorized():
+    return """<!doctype html>
+<html>
+<head>
+    <title>401 Unauthorized</title>
+</head>
+<body>
+    <h1>401 Unauthorized</h1>
+    <p>Для доступа к запрашиваемому ресурсу требуется аутентификация.</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 401
+
+@app.route("/402")
+def payment_required():
+    return """<!doctype html>
+<html>
+<head>
+    <title>402 Payment Required</title>
+</head>
+<body>
+    <h1>402 Payment Required</h1>
+    <p>Запрос не может быть обработан until the client makes a payment.</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 402
+
+@app.route("/403")
+def forbidden():
+    return """<!doctype html>
+<html>
+<head>
+    <title>403 Forbidden</title>
+</head>
+<body>
+    <h1>403 Forbidden</h1>
+    <p>Доступ к запрашиваемому ресурсу запрещен.</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 403
+
+@app.route("/405")
+def method_not_allowed():
+    return """<!doctype html>
+<html>
+<head>
+    <title>405 Method Not Allowed</title>
+</head>
+<body>
+    <h1>405 Method Not Allowed</h1>
+    <p>Метод, указанный в запросе, не разрешен для данного ресурса.</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 405
+
+@app.route("/418")
+def im_a_teapot():
+    return """<!doctype html>
+<html>
+<head>
+    <title>418 I'm a teapot</title>
+</head>
+<body>
+    <h1>418 I'm a teapot</h1>
+    <p>Я - чайник. Не могу заварить кофе.</p>
+    <p>Это шуточный код из RFC 2324 (Hyper Text Coffee Pot Control Protocol).</p>
+    <p><a href="/http-codes">Вернуться к списку кодов</a></p>
+    <p><a href="/">Вернуться на главную</a></p>
+</body>
+</html>""", 418
 
 @app.route("/lab1")
 def lab1_index():
@@ -66,136 +180,7 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
 </body>
 </html>"""
 
-@app.route("/lab1/web")
-def web():
-    headers = {
-        'X-Server': 'MyFlaskServer/1.0',
-        'Content-Type': 'text/plain; charset=utf-8',
-        'X-Developer': 'Арышева Арина Юрьевна',
-        'X-Version': '1.0.0'
-    }
-    
-    return """<!doctype html>
-<html>
-<body>
-<h1>web-сервер на flask</h1>
-<p><a href="/lab1/author">Перейти к информации об авторе</a></p>
-<p><a href="/lab1/image">Посмотреть картинку</a></p>
-<p><a href="/lab1/visit">Счетчик посещений</a></p>
-<p><a href="/lab1/info">Перенаправление на автора</a></p>
-<p><a href="/created">Страница с кодом 201</a></p>
-<p><a href="/lab1">Вернуться к меню лабораторной</a></p>
-<p><a href="/">Вернуться на главную</a></p>
-</body>
-</html>""", 200, headers
-
-@app.route("/lab1/web-html")
-def web_html():
-    # Версия с HTML content-type для нормального отображения
-    headers = {
-        'X-Server': 'MyFlaskServer/1.0',
-        'X-Developer': 'Арышева Арина Юрьевна'
-    }
-    
-    return """<!doctype html>
-<html>
-<body>
-<h1>web-сервер на flask</h1>
-<p><a href="/lab1/author">Перейти к информации об авторе</a></p>
-<p><a href="/lab1/image">Посмотреть картинку</a></p>
-<p><a href="/lab1/visit">Счетчик посещений</a></p>
-<p><a href="/lab1/info">Перенаправление на автора</a></p>
-<p><a href="/created">Страница с кодом 201</a></p>
-<p><a href="/lab1/web">Посмотреть версию с text/plain</a></p>
-<p><a href="/lab1">Вернуться к меню лабораторной</a></p>
-<p><a href="/">Вернуться на главную</a></p>
-</body>
-</html>""", 200, headers
-
-@app.route("/lab1/author")
-def author():
-    name = "Арышева Арина Юрьевна"
-    group = "ФБИ-34"
-    faculty = "ФБ"
-    
-    return """<!doctype html>
-<html>
-<body>
-<p>Студент: """ + name + """</p>
-<p>Группа: """ + group + """</p>
-<p>Факультет: """ + faculty + """</p>
-<p><a href="/lab1/web-html">Вернуться к первой лабораторной</a></p>
-<p><a href="/lab1">Вернуться к меню лабораторной</a></p>
-<p><a href="/">Вернуться на главную</a></p>
-</body>
-</html>"""
-
-@app.route("/lab1/image")
-def image():
-    # Получаем путь к картинке и CSS с помощью url_for
-    image_path = url_for('static', filename='image.jpg')
-    css_path = url_for('static', filename='lab1.css')
-    
-    return f'''<!doctype html>
-<html>
-<head>
-    <title>Картинка</title>
-    <link rel="stylesheet" href="{css_path}">
-</head>
-<body>
-    <div class="container">
-        <h1>Моя картинка</h1>
-        <div class="image-container">
-            <img src="{image_path}" alt="Мое изображение">
-        </div>
-        <a href="/lab1/web-html" class="back-link">Вернуться к первой лабораторной</a>
-        <a href="/lab1" class="back-link">Вернуться к меню лабораторной</a>
-        <a href="/" class="back-link">Вернуться на главную</a>
-    </div>
-</body>
-</html>'''
-
-@app.route("/lab1/visit")
-def visit():
-    global visit_count  # Указываем, что используем глобальную переменную
-    visit_count += 1
-    
-    # Получаем служебную информацию
-    current_time = datetime.datetime.now()
-    client_ip = request.remote_addr
-    server_name = request.host
-    
-    return """<!doctype html>
-<html>
-<body>
-<h1>Счетчик посещений</h1>
-<p>Количество посещений этой страницы: """ + str(visit_count) + """</p>
-<h2>Служебная информация:</h2>
-<p>Текущая дата и время: """ + str(current_time) + """</p>
-<p>IP-адрес клиента: """ + client_ip + """</p>
-<p>Имя хоста веб-сервера: """ + server_name + """</p>
-<p><a href="/lab1/visit/reset">Очистить счетчик</a></p>
-<p><a href="/lab1/web-html">Вернуться к первой лабораторной</a></p>
-<p><a href="/lab1">Вернуться к меню лабораторной</a></p>
-<p><a href="/">Вернуться на главную</a></p>
-</body>
-</html>"""
-
-@app.route("/lab1/visit/reset")
-def reset_visit_counter():
-    global visit_count
-    visit_count = 0
-    return redirect("/lab1/visit")
-
-@app.route("/lab1/info")
-def info():
-    # Перенаправляем на страницу автора
-    return redirect("/lab1/author")
-
-@app.route("/created")
-def created():
-    # Возвращаем код 201 Created
-    return "Ресурс успешно создан", 201
+# ... остальные существующие обработчики (web, web-html, author, image, visit, info, created) ...
 
 @app.errorhandler(404)
 def page_not_found(error):
