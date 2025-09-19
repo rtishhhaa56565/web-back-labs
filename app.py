@@ -8,6 +8,12 @@ visit_count = 0
 
 @app.route("/web")
 def web():
+    headers = {
+        'X-Server': 'MyFlaskServer/1.0',
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Developer': 'Арышева Арина Юрьевна'
+    }
+    
     return """<!doctype html>
 <html>
 <body>
@@ -18,7 +24,7 @@ def web():
 <p><a href="/info">Перенаправление на автора</a></p>
 <p><a href="/created">Страница с кодом 201</a></p>
 </body>
-</html>"""
+</html>""", 200, headers
 
 @app.route("/author")
 def author():
