@@ -106,9 +106,16 @@ def visit():
 <p>Текущая дата и время: """ + str(current_time) + """</p>
 <p>IP-адрес клиента: """ + client_ip + """</p>
 <p>Имя хоста веб-сервера: """ + server_name + """</p>
+<p><a href="/lab1/visit/reset">Очистить счетчик</a></p>
 <p><a href="/web-html">Вернуться на главную</a></p>
 </body>
 </html>"""
+
+@app.route("/lab1/visit/reset")
+def reset_visit_counter():
+    global visit_count
+    visit_count = 0
+    return redirect("/lab1/visit")
 
 @app.route("/info")
 def info():
