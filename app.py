@@ -17,7 +17,6 @@ def index():
         <ul>
             <li><a href="/error1">Ошибка 1: Деление на ноль</a></li>
             <li><a href="/error2">Ошибка 2: Конкатенация числа и строки</a></li>
-            <li><a href="/error3">Ошибка 3: Неопределенная переменная</a></li>
         </ul>
     </body>
     </html>
@@ -37,11 +36,6 @@ def error2():
     text = "текст"
     result = number + text  # TypeError
     return str(result)
-
-@app.route("/error3")
-def error3():
-    # Использование неопределенной переменной
-    return undefined_variable  # NameError
 
 # Обработчик ошибки 500 (внутренняя ошибка сервера)
 @app.errorhandler(500)
