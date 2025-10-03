@@ -1,6 +1,10 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, request
+import datetime
 
 app = Flask(__name__)
+
+# Глобальная переменная для хранения лога 404 ошибок
+error_404_log = []
 
 # Главная страница
 @app.route("/")
@@ -237,19 +241,130 @@ def internal_server_error(error):
     </html>
     """, 500
 
+# Улучшенный обработчик ошибки 404
 @app.errorhandler(404)
 def page_not_found(error):
-    return """
+    # Получаем информацию о запросе
+    client_ip = request.remote_addr
+    access_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    requested_url = request.url
+    
+    # Добавляем запись в лог
+    log_entry = {
+        'ip': client_ip,
+        'date': access_date,
+        'url': requested_url
+    }
+    error_404_log.append(log_entry)
+    
+    # Формируем HTML страницы
+    log_html = ""
+    for entry in reversed(error_404_log[-10:]):  # Показываем последние 10 записей
+        log_html += f"<tr><td>{entry['ip']}</td><td>{entry['date']}</td><td>{entry['url']}</td></tr>"
+    
+    return f"""
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Страница не найдена</title>
+        <title>Страница не найдена - Ошибка 404</title>
         <meta charset="utf-8">
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }}
+            .error-container {{
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }}
+            .error-code {{
+                font-size: 72px;
+                color: #d32f2f;
+                margin: 0;
+                text-align: center;
+            }}
+            .error-title {{
+                color: #333;
+                margin-bottom: 20px;
+                text-align: center;
+            }}
+            .info-section {{
+                background: #e8f4fd;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 15px 0;
+            }}
+            .log-section {{
+                background: white;
+                padding: 20px;
+                border-radius: 5px;
+                margin-top: 20px;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }}
+            th, td {{
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
+            .home-link {{
+                display: inline-block;
+                padding: 10px 20px;
+                background: #2196F3;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 15px;
+            }}
+        </style>
     </head>
     <body>
-        <h1>404 - Страница не найдена</h1>
-        <p>Запрашиваемая страница не существует.</p>
-        <a href="/">На главную</a>
+        <div class="error-container">
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">Страница не найдена</h2>
+            
+            <div class="info-section">
+                <h3>Информация о запросе:</h3>
+                <p><strong>IP-адрес пользователя:</strong> {client_ip}</p>
+                <p><strong>Дата и время доступа:</strong> {access_date}</p>
+                <p><strong>Запрошенный URL:</strong> {requested_url}</p>
+            </div>
+            
+            <p>Запрашиваемая страница не существует. Пожалуйста, проверьте URL или перейдите на главную страницу.</p>
+            
+            <a href="/" class="home-link">Перейти на главную страницу</a>
+        </div>
+        
+        <div class="log-section">
+            <h3>Лог 404 ошибок (последние 10 записей):</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>IP-адрес</th>
+                        <th>Дата и время</th>
+                        <th>Запрошенный URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {log_html}
+                </tbody>
+            </table>
+            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                Всего записей в логе: {len(error_404_log)}
+            </p>
+        </div>
     </body>
     </html>
     """, 404
