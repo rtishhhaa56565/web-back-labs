@@ -13,10 +13,11 @@ def index():
         <meta charset="utf-8">
     </head>
     <body>
-        <h1>Тестирование ошибки 500</h1>
+        <h1>Тестирование ошибки 500 и заголовков</h1>
         <ul>
             <li><a href="/error1">Ошибка 1: Деление на ноль</a></li>
             <li><a href="/error2">Ошибка 2: Конкатенация числа и строки</a></li>
+            <li><a href="/image">Страница с изображением (тест заголовков)</a></li>
         </ul>
     </body>
     </html>
@@ -36,6 +37,37 @@ def error2():
     text = "текст"
     result = number + text  # TypeError
     return str(result)
+
+# Обработчик /image с кастомными заголовками
+@app.route("/image")
+def image():
+    # Кастомные заголовки
+    headers = {
+        'Content-Language': 'ru',  # Язык контента - русский
+        'X-Developer': 'Арышева Арина Юрьевна',
+        'X-Student-Group': 'ФБИ-34'
+    }
+    
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Страница с изображением</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>Страница с изображением</h1>
+        <p>Эта страница возвращает кастомные заголовки:</p>
+        <ul>
+            <li>Content-Language: ru (русский язык)</li>
+            <li>X-Developer: Арышева Арина Юрьевна</li>
+            <li>X-Student-Group: ФБИ-34</li>
+        </ul>
+        <p>Для проверки откройте Инструменты разработчика (F12) → Network → кликните на запрос → Headers</p>
+        <a href="/">На главную</a>
+    </body>
+    </html>
+    ''', 200, headers
 
 # Обработчик ошибки 500 (внутренняя ошибка сервера)
 @app.errorhandler(500)
