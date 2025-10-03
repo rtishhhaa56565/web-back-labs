@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for
 
 app = Flask(__name__)
 
@@ -41,30 +41,97 @@ def error2():
 # Обработчик /image с кастомными заголовками
 @app.route("/image")
 def image():
-    # Кастомные заголовки
+    # Кастомные заголовки - значения только на латинице
     headers = {
-        'Content-Language': 'ru',  # Язык контента - русский
-        'X-Developer': 'Арышева Арина Юрьевна',
-        'X-Student-Group': 'ФБИ-34'
+        'Content-Language': 'ru',
+        'X-Developer': 'Student',
+        'X-Student-Group': 'FBI-34',
+        'X-Custom-Header': 'Flask-Lab-Work'
     }
     
-    return '''
+    image_path = url_for('static', filename='image(2).jpg')
+    
+    return f'''
     <!DOCTYPE html>
     <html>
     <head>
         <title>Страница с изображением</title>
         <meta charset="utf-8">
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                text-align: center;
+            }}
+            .image-container {{
+                margin: 20px auto;
+            }}
+            .image-container img {{
+                max-width: 100%;
+                height: auto;
+                border: 2px solid #333;
+                border-radius: 10px;
+            }}
+            .info {{
+                margin-top: 20px;
+                padding: 15px;
+                background: #f5f5f5;
+                border-radius: 5px;
+                text-align: left;
+            }}
+            .header-list {{
+                background: white;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 10px 0;
+            }}
+        </style>
     </head>
     <body>
-        <h1>Страница с изображением</h1>
-        <p>Эта страница возвращает кастомные заголовки:</p>
-        <ul>
-            <li>Content-Language: ru (русский язык)</li>
-            <li>X-Developer: Арышева Арина Юрьевна</li>
-            <li>X-Student-Group: ФБИ-34</li>
-        </ul>
-        <p>Для проверки откройте Инструменты разработчика (F12) → Network → кликните на запрос → Headers</p>
-        <a href="/">На главную</a>
+        <h1>Тестирование кастомных заголовков ответа</h1>
+        
+        <div class="image-container">
+            <img src="{image_path}" alt="Тестовое изображение" width="400">
+        </div>
+        
+        <div class="info">
+            <h3>Кастомные заголовки этого ответа:</h3>
+            
+            <div class="header-list">
+                <strong>Content-Language: ru</strong><br>
+                <em>Назначение:</em> Указывает язык контента страницы<br>
+                <em>Возможные значения:</em> ru (русский), en (английский), fr (французский) и т.д.
+            </div>
+            
+            <div class="header-list">
+                <strong>X-Developer: Student</strong><br>
+                <em>Назначение:</em> Кастомный заголовок с информацией о разработчике
+            </div>
+            
+            <div class="header-list">
+                <strong>X-Student-Group: FBI-34</strong><br>
+                <em>Назначение:</em> Кастомный заголовок с учебной группой
+            </div>
+
+            <div class="header-list">
+                <strong>X-Custom-Header: Flask-Lab-Work</strong><br>
+                <em>Назначение:</em> Произвольный кастомный заголовок
+            </div>
+            
+            <h4>Как проверить заголовки:</h4>
+            <ol>
+                <li>Откройте Инструменты разработчика (F12)</li>
+                <li>Перейдите на вкладку "Network"</li>
+                <li>Обновите страницу (Ctrl+R)</li>
+                <li>Кликните на запрос "image"</li>
+                <li>Перейдите на вкладку "Headers"</li>
+                <li>В разделе "Response Headers" увидите все заголовки</li>
+            </ol>
+        </div>
+        
+        <a href="/">Вернуться на главную</a>
     </body>
     </html>
     ''', 200, headers
