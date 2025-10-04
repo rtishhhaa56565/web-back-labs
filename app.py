@@ -422,3 +422,12 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=5000)
+
+@app.route('/lab2/a')
+def a():
+    return 'без слэша'
+
+@app.route('/lab2/a/')
+def a2():
+    return 'со слэшем'
+    
