@@ -245,6 +245,37 @@ def info():
 def server_error():
     return 10 / 0
 
+# Начальный список цветов
+flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
+
+# Обработчик для просмотра цветов по ID
+@app.route('/lab2/flowers/<int:flower_id>')
+def flowers(flower_id):
+    if flower_id >= len(flower_list):
+        abort(404)
+    else:
+        return f"цветок: {flower_list[flower_id]}"
+
+# Обработчик для добавления цветов
+@app.route('/lab2/add_flower/<path:name>')
+def add_flower(name):
+    flower_list.append(name)
+    return f'''
+<!doctype html>
+<html>
+    <body>
+        <h1>Добавлен новый цветок</h1>
+        <p>Название нового цветка: {name}</p>
+        <p>Всего цветов: {len(flower_list)}</p>
+        <p>Полный список: {flower_list}</p>
+        <nav>
+            <a href="/lab2/flowers/0">Просмотреть цветы</a> | 
+            <a href="/">На главную</a>
+        </nav>
+    </body>
+</html>
+'''
+
 # HTTP коды ошибок
 @app.route("/400")
 def bad_request():
@@ -430,10 +461,4 @@ def a():
 @app.route('/lab2/a/')
 def a2():
     return 'со слэшем'
-    
-@lab2.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    if flower_id >= len(flower_list):
-        abort(404)
-    else:
-        return "цветок: " + flower_list[flower_id]    
+
