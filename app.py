@@ -431,3 +431,9 @@ def a():
 def a2():
     return 'со слэшем'
     
+@lab2.route('/lab2/flowers/<int:flower_id>')
+def flowers(flower_id):
+    if flower_id >= len(flower_list):
+        abort(404)
+    else:
+        return "цветок: " + flower_list[flower_id]    
