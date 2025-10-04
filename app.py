@@ -278,7 +278,8 @@ def add_flower(name):
 
 @app.route("/lab2/template")
 def lab2_template():
-    return render_template('lab2.html')
+    name = 'Арышева Арина'
+    return render_template('lab2.html', name=name)
 
 # HTTP коды ошибок
 @app.route("/400")
