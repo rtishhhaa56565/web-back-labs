@@ -292,7 +292,7 @@ fruits = [
 # Обработчики шаблонов с передачей переменных
 @app.route("/lab2/template")
 def lab2_template():
-    return render_template('lab2.html', 
+    return render_template('example.html', 
                          name="Арышева Арина",
                          group="ФБИ-34", 
                          course=3,
@@ -300,7 +300,11 @@ def lab2_template():
 
 @app.route("/lab2/template/anonymous")
 def lab2_template_anonymous():
-    return render_template('lab2.html', fruits=fruits)
+    return render_template('example.html', fruits=fruits)
+
+@app.route('/lab2/')
+def lab2():
+    return render_template('lab2.html')
 
 # HTTP коды ошибок
 @app.route("/400")

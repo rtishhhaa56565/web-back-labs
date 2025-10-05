@@ -1,56 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% if name %}
-            {{ name }}. Лабораторная работа 2
-        {% else %}
-            Анонимус. Лабораторная работа 2
-        {% endif %}
-    </title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-</head>
-<body>
-    <header>
-        WEB-программирование, часть 2. Лабораторная работа 2
-    </header>
+{% extends "base.html" %}
 
-    <main>
-        5 + 2 = {{ 5 + 2 }}<br>
-        11 × 28 = {{ 11 * 28 }}<br>
-        3258 - 759 = {{ 3258 - 759 }}<br>
-        8452 / 793 = {{ 8452 / 793 }}<br>
-        45<sup>8</sup> = {{ 45**8 }}<br>
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа 2{% endblock %}
 
-        <ul>
-            {% for f in fruits %}
-            <li>{{ f.name }}: {{ f.price }} &#x20bd;</li>
-            {% endfor %}
-        </ul>
-    </main>
-
-    <footer>
-        &copy;
-        {% if name %}
-            {{ name }},
-        {% else %}
-            Анонимус,
-        {% endif %}
-        
-        {% if group %}
-            {{ group }},
-        {% else %}
-            Без группы,
-        {% endif %}
-        
-        {% if course %}
-            {{ course }} курс,
-        {% else %}
-            Неизвестный курс,
-        {% endif %}
-        2025
-    </footer>
-</body>
-</html>
+{# основоной контент: #}
+{% block main %}
+<h1>Шаблоны</h1>
+<div>Тема лабораторной - шаблоны. Список сделанных страниц:</div>
+<ol>
+    <li>
+        <a href="/lab2/example">example</a>
+    </li>
+</ol>
+{% endblock %}
