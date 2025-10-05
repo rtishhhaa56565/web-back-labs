@@ -28,6 +28,8 @@ def index():
                     <li><a href="/lab1">Первая лабораторная</a></li>
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
+                    <li><a href="/lab2/template">Шаблон с данными</a></li>
+                    <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
                 </ul>
             </nav>
         </main>
@@ -74,6 +76,8 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
                 <li><a href="/lab1/error">Тест ошибки 500 (/lab1/error)</a></li>
                 <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                 <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
+                <li><a href="/lab2/template">Шаблон с данными</a></li>
+                <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
                 <li><a href="/400">400 Bad Request</a></li>
                 <li><a href="/401">401 Unauthorized</a></li>
                 <li><a href="/402">402 Payment Required</a></li>
@@ -276,10 +280,17 @@ def add_flower(name):
 </html>
 '''
 
+# Обработчики шаблонов с передачей переменных
 @app.route("/lab2/template")
 def lab2_template():
-    name = 'Арышева Арина'
-    return render_template('lab2.html', name=name)
+    return render_template('lab2.html', 
+                         name="Арышева Арина",
+                         group="ФБИ-34", 
+                         course=3)
+
+@app.route("/lab2/template/anonymous")
+def lab2_template_anonymous():
+    return render_template('lab2.html')
 
 # HTTP коды ошибок
 @app.route("/400")
@@ -458,12 +469,3 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(debug=False, host='127.0.0.1', port=5000)
-
-@app.route('/lab2/a')
-def a():
-    return 'без слэша'
-
-@app.route('/lab2/a/')
-def a2():
-    return 'со слэшем'
-
