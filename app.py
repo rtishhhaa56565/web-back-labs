@@ -280,17 +280,27 @@ def add_flower(name):
 </html>
 '''
 
+# Список фруктов
+fruits = [
+    {'name': 'яблоки', 'price': 100},
+    {'name': 'груши', 'price': 120},
+    {'name': 'апельсины', 'price': 80},
+    {'name': 'мандарины', 'price': 95},
+    {'name': 'манго', 'price': 321}
+]
+
 # Обработчики шаблонов с передачей переменных
 @app.route("/lab2/template")
 def lab2_template():
     return render_template('lab2.html', 
                          name="Арышева Арина",
                          group="ФБИ-34", 
-                         course=3)
+                         course=3,
+                         fruits=fruits)
 
 @app.route("/lab2/template/anonymous")
 def lab2_template_anonymous():
-    return render_template('lab2.html')
+    return render_template('lab2.html', fruits=fruits)
 
 # HTTP коды ошибок
 @app.route("/400")
