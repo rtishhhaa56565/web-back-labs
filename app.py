@@ -451,6 +451,128 @@ def filters():
     </body>
     </html>
     """
+# Обработчики для калькулятора с переадресацией
+@app.route('/lab2/calc/')
+def calc_default():
+    """Переадресация на /lab2/calc/1/1 по умолчанию"""
+    return redirect('/lab2/calc/1/1')
+
+@app.route('/lab2/calc/<int:a>')
+def calc_single_number(a):
+    """Переадресация с одного числа на два числа (второе = 1)"""
+    return redirect(f'/lab2/calc/{a}/1')
+
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def calc_two_numbers(a, b):
+    """Обработчик для двух чисел - математические операции"""
+    try:
+        # Выполняем математические операции
+        addition = a + b
+        subtraction = a - b
+        multiplication = a * b
+        division = a / b if b != 0 else "Ошибка: деление на ноль"
+        exponentiation = a ** b
+        
+        return f'''
+<!doctype html>
+<html>
+    <head>
+        <title>Калькулятор</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }}
+            h1 {{
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+            }}
+            .numbers {{
+                background: #e8f4fd;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                text-align: center;
+            }}
+            .operations {{
+                margin-top: 20px;
+            }}
+            .operation {{
+                padding: 10px;
+                margin: 8px 0;
+                background: #f8f9fa;
+                border-radius: 5px;
+                border-left: 4px solid #3498db;
+            }}
+            .nav-links {{
+                text-align: center;
+                margin-top: 25px;
+            }}
+            .nav-links a {{
+                display: inline-block;
+                margin: 0 8px;
+                padding: 10px 20px;
+                background: #3498db;
+                color: white;
+                text-decoration: none;
+                border-radius: 20px;
+            }}
+            .nav-links a:hover {{
+                background: #2980b9;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Калькулятор</h1>
+            
+            <div class="numbers">
+                <h2>Исходные числа:</h2>
+                <p><strong>Первое число (a):</strong> {a}</p>
+                <p><strong>Второе число (b):</strong> {b}</p>
+            </div>
+            
+            <div class="operations">
+                <h2>Результаты операций:</h2>
+                <div class="operation">
+                    <strong>Суммирование:</strong> {a} + {b} = {addition}
+                </div>
+                <div class="operation">
+                    <strong>Вычитание:</strong> {a} - {b} = {subtraction}
+                </div>
+                <div class="operation">
+                    <strong>Умножение:</strong> {a} × {b} = {multiplication}
+                </div>
+                <div class="operation">
+                    <strong>Деление:</strong> {a} ÷ {b} = {division}
+                </div>
+                <div class="operation">
+                    <strong>Возведение в степень:</strong> {a}<sup>{b}</sup> = {exponentiation}
+                </div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="/lab2/calc/10/5">Пример: 10 и 5</a>
+                <a href="/lab2/calc/8/2">Пример: 8 и 2</a>
+                <a href="/lab2/calc/15/3">Пример: 15 и 3</a>
+                <a href="/">На главную</a>
+            </div>
+        </div>
+    </body>
+</html>
+'''
+    except Exception as e:
+        return f"Ошибка: {str(e)}", 500
 
 # HTTP коды ошибок
 @app.route("/400")
