@@ -30,6 +30,8 @@ def index():
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>
                     <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
+                    <li><a href="/lab2/flowers/all">Все цветы</a></li>
+                    <li><a href="/lab2/filters">Фильтры</a></li>
                 </ul>
             </nav>
         </main>
@@ -249,33 +251,161 @@ def info():
 def server_error():
     return 10 / 0
 
-# Начальный список цветов
-flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
-
-# Обработчик для просмотра цветов по ID
+# Обработчик для просмотра цветов по ID с улучшенным HTML
 @app.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
     if flower_id >= len(flower_list):
         abort(404)
     else:
-        return f"цветок: {flower_list[flower_id]}"
-
-# Обработчик для добавления цветов
-@app.route('/lab2/add_flower/<path:name>')
-def add_flower(name):
-    flower_list.append(name)
-    return f'''
+        return f'''
 <!doctype html>
 <html>
+    <head>
+        <title>Цветок #{flower_id}</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }}
+            .flower-header {{
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+            }}
+            .flower-info {{
+                background: #e8f4fd;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            }}
+            .flower-details {{
+                font-size: 18px;
+                line-height: 1.6;
+            }}
+            .nav-links {{
+                text-align: center;
+                margin-top: 25px;
+            }}
+            .nav-links a {{
+                display: inline-block;
+                margin: 0 8px;
+                padding: 10px 20px;
+                background: #3498db;
+                color: white;
+                text-decoration: none;
+                border-radius: 20px;
+                transition: background 0.3s ease;
+            }}
+            .nav-links a:hover {{
+                background: #2980b9;
+            }}
+            .danger {{
+                background: #e74c3c !important;
+            }}
+            .danger:hover {{
+                background: #c0392b !important;
+            }}
+        </style>
+    </head>
     <body>
-        <h1>Добавлен новый цветок</h1>
-        <p>Название нового цветка: {name}</p>
-        <p>Всего цветов: {len(flower_list)}</p>
-        <p>Полный список: {flower_list}</p>
-        <nav>
-            <a href="/lab2/flowers/0">Просмотреть цветы</a> | 
-            <a href="/">На главную</a>
-        </nav>
+        <div class="container">
+            <div class="flower-header">
+                <h1>Информация о цветке</h1>
+            </div>
+            
+            <div class="flower-info">
+                <div class="flower-details">
+                    <p><strong>ID цветка:</strong> {flower_id}</p>
+                    <p><strong>Название:</strong> {flower_list[flower_id]}</p>
+                    <p><strong>Всего цветов в коллекции:</strong> {len(flower_list)}</p>
+                </div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="/lab2/flowers/all">Все цветы</a>
+                <a href="/lab2/add_flower/новый_цветок">Добавить цветок</a>
+                <a href="/lab2/flowers/clear" class="danger">Очистить список</a>
+                <a href="/">На главную</a>
+            </div>
+        </div>
+    </body>
+</html>
+'''
+
+# Обработчик для очистки списка цветов
+@app.route('/lab2/flowers/clear')
+def clear_flowers():
+    global flower_list
+    flower_list.clear()
+    flower_list.extend(['роза', 'тюльпан', 'незабудка', 'ромашка'])  # Восстанавливаем начальные
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>Список очищен</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                text-align: center;
+            }}
+            .success-message {{
+                background: #e8f6f3;
+                padding: 25px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+                border-left: 5px solid #27ae60;
+            }}
+            .nav-links {{
+                margin-top: 25px;
+            }}
+            .nav-links a {{
+                display: inline-block;
+                margin: 0 8px;
+                padding: 10px 20px;
+                background: #3498db;
+                color: white;
+                text-decoration: none;
+                border-radius: 20px;
+                transition: background 0.3s ease;
+            }}
+            .nav-links a:hover {{
+                background: #2980b9;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="success-message">
+                <h1>Список цветов очищен!</h1>
+                <p>Все цветы были удалены из коллекции.</p>
+                <p><strong>Восстановлены начальные цветы:</strong> роза, тюльпан, незабудка, ромашка</p>
+            </div>
+            
+            <div class="nav-links">
+                <a href="/lab2/flowers/all">Посмотреть все цветы</a>
+                <a href="/lab2/add_flower/орхидея">Добавить новый цветок</a>
+                <a href="/">На главную</a>
+            </div>
+        </div>
     </body>
 </html>
 '''
@@ -305,6 +435,22 @@ def lab2_template_anonymous():
 @app.route('/lab2/')
 def lab2():
     return render_template('lab2.html')
+
+# Обработчик для страницы фильтров
+@app.route('/lab2/filters')
+def filters():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Фильтры</title>
+    </head>
+    <body>
+        <h1>Фильтры Jinja2</h1>
+        <p>Фраза: О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных...</p>
+    </body>
+    </html>
+    """
 
 # HTTP коды ошибок
 @app.route("/400")
