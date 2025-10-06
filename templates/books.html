@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Библиотека</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .stats {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .books-table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .books-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .books-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .books-table tr:hover {
+            background: #e3f2fd;
+        }
+        .nav-links {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+        }
+        .nav-links a:hover {
+            background: #2980b9;
+        }
+        .genre-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e3f2fd;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Библиотека классической литературы</h1>
+        
+        <div class="stats">
+            <p><strong>Всего книг в коллекции:</strong> {{ books|length }}</p>
+            <p><strong>Общее количество страниц:</strong> {{ books|sum(attribute='pages') }}</p>
+        </div>
+
+        <table class="books-table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Автор</th>
+                    <th>Название книги</th>
+                    <th>Жанр</th>
+                    <th>Страниц</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td><strong>{{ loop.index }}</strong></td>
+                    <td>{{ book.author }}</td>
+                    <td><strong>{{ book.title }}</strong></td>
+                    <td><span class="genre-badge">{{ book.genre }}</span></td>
+                    <td>{{ book.pages }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="nav-links">
+            <a href="/">На главную</a>
+            <a href="/lab2/template">Шаблоны</a>
+            <a href="/lab2/flowers/all">Цветы</a>
+        </div>
+    </div>
+</body>
+</html>
