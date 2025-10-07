@@ -6,8 +6,11 @@
     <title>Арышева Арина. {% block lab %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     
-    <!-- Простая фавиконка -->
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Фавиконки из папки favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicons/favicon.ico') }}">
+    
     <style>
         .header-nav {
             background: #2c3e50;

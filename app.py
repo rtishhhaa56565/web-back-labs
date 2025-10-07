@@ -95,7 +95,6 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
     </body>
     </html>
     """
-
 # Обработчики для лабораторной работы 2
 @app.route('/lab2/a')
 def a():
@@ -780,6 +779,28 @@ berries = [
 @app.route('/lab2/berries')
 def berries_list():
     return render_template('berries.html', berries=berries)
+
+@app.route('/test-favicons')
+def test_favicons():
+    """Страница для тестирования фавиконок"""
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Тест фавиконок</title>
+    </head>
+    <body>
+        <h1>Тест доступности фавиконок</h1>
+        
+        <h2>Проверка ссылок:</h2>
+        <ul>
+            <li><a href="/static/favicons/favicon.ico">favicon.ico</a></li>
+            <li><a href="/static/favicons/favicon-16x16.png">favicon-16x16.png</a></li>
+            <li><a href="/static/favicons/favicon-32x32.png">favicon-32x32.png</a></li>
+        </ul>
+    </body>
+    </html>
+    """
 
 # HTTP коды ошибок
 @app.route("/400")
