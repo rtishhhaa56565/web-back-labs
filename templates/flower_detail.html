@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block lab %}Цветок #{{ flower_id }}{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="flower-header">
+        <h1>Информация о цветке</h1>
+    </div>
+    
+    <div class="flower-info">
+        <div class="flower-details">
+            <p><strong>ID цветка:</strong> {{ flower_id }}</p>
+            <p><strong>Название:</strong> {{ flower.name }}</p>
+            <p><strong>Цена:</strong> {{ flower.price }} ₽</p>
+            <p><strong>Всего цветов в коллекции:</strong> {{ total_flowers }}</p>
+        </div>
+    </div>
+    
+    <div class="nav-links">
+        <a href="/lab2/flowers/all">Все цветы</a>
+        <a href="/lab2/flowers/add">Добавить цветок</a>
+        <a href="/lab2/flowers/delete/{{ flower_id }}" class="danger">Удалить этот цветок</a>
+        <a href="/">На главную</a>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .flower-header {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+    }
+    .flower-info {
+        background: #e8f4fd;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+    }
+    .flower-details {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+    .nav-links {
+        text-align: center;
+        margin-top: 25px;
+    }
+    .nav-links a {
+        display: inline-block;
+        margin: 0 8px;
+        padding: 10px 20px;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 20px;
+        transition: background 0.3s ease;
+    }
+    .nav-links a:hover {
+        background: #2980b9;
+    }
+    .danger {
+        background: #e74c3c !important;
+    }
+    .danger:hover {
+        background: #c0392b !important;
+    }
+</style>
+{% endblock %}

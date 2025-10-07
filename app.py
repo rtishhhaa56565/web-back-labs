@@ -6,6 +6,16 @@ app = Flask(__name__)
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
 
+# Обновленный список цветов с ID и ценами
+flower_list = [
+    {'id': 1, 'name': 'роза', 'price': 300},
+    {'id': 2, 'name': 'тюльпан', 'price': 310},
+    {'id': 3, 'name': 'незабудка', 'price': 320},
+    {'id': 4, 'name': 'ромашка', 'price': 330},
+    {'id': 5, 'name': 'георгин', 'price': 300},
+    {'id': 6, 'name': 'гладиолус', 'price': 310}
+]
+
 # Главная страница
 @app.route("/")
 @app.route("/index")
@@ -33,7 +43,7 @@ def index():
                     <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
                     <li><a href="/lab2/flowers/all">Все цветы</a></li>
                     <li><a href="/lab2/filters">Фильтры</a></li>
-                    <li><a href="/lab2/filters">Ягоды</a></li>
+                    <li><a href="/lab2/berries">Ягоды</a></li>
                 </ul>
             </nav>
         </main>
@@ -95,6 +105,10 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
     </body>
     </html>
     """
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicons/favicon.ico')
+
 # Обработчики для лабораторной работы 2
 @app.route('/lab2/a')
 def a():
@@ -331,164 +345,53 @@ def info():
 def server_error():
     return 10 / 0
 
-# Обработчик для просмотра цветов по ID с улучшенным HTML
-@app.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    if flower_id >= len(flower_list):
-        abort(404)
-    else:
-        return f'''
-<!doctype html>
-<html>
-    <head>
-        <title>Цветок #{flower_id}</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                margin: 40px;
-                background-color: #f5f5f5;
-            }}
-            .container {{
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            }}
-            .flower-header {{
-                text-align: center;
-                color: #2c3e50;
-                margin-bottom: 30px;
-            }}
-            .flower-info {{
-                background: #e8f4fd;
-                padding: 20px;
-                border-radius: 10px;
-                margin-bottom: 25px;
-            }}
-            .flower-details {{
-                font-size: 18px;
-                line-height: 1.6;
-            }}
-            .nav-links {{
-                text-align: center;
-                margin-top: 25px;
-            }}
-            .nav-links a {{
-                display: inline-block;
-                margin: 0 8px;
-                padding: 10px 20px;
-                background: #3498db;
-                color: white;
-                text-decoration: none;
-                border-radius: 20px;
-                transition: background 0.3s ease;
-            }}
-            .nav-links a:hover {{
-                background: #2980b9;
-            }}
-            .danger {{
-                background: #e74c3c !important;
-            }}
-            .danger:hover {{
-                background: #c0392b !important;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="flower-header">
-                <h1>Информация о цветке</h1>
-            </div>
-            
-            <div class="flower-info">
-                <div class="flower-details">
-                    <p><strong>ID цветка:</strong> {flower_id}</p>
-                    <p><strong>Название:</strong> {flower_list[flower_id]}</p>
-                    <p><strong>Всего цветов в коллекции:</strong> {len(flower_list)}</p>
-                </div>
-            </div>
-            
-            <div class="nav-links">
-                <a href="/lab2/flowers/all">Все цветы</a>
-                <a href="/lab2/add_flower/новый_цветок">Добавить цветок</a>
-                <a href="/lab2/flowers/clear" class="danger">Очистить список</a>
-                <a href="/">На главную</a>
-            </div>
-        </div>
-    </body>
-</html>
-'''
 
-# Обработчик для очистки списка цветов
-@app.route('/lab2/flowers/clear')
-def clear_flowers():
-    global flower_list
+# Обработчик для вывода всех цветов с шаблоном (ОБНОВЛЕН)
+@app.route('/lab2/flowers/all')
+def all_flowers():
+    total_price = sum(flower['price'] for flower in flower_list)
+    return render_template('flowers_all.html', 
+                         flowers=flower_list,
+                         total_price=total_price)
+
+# Обработчик для добавления цветка (форма) - НОВЫЙ
+@app.route('/lab2/flowers/add', methods=['POST'])
+def add_flower():
+    name = request.form.get('flower_name')
+    if name:
+        # Находим максимальный ID и добавляем новый
+        max_id = max(flower['id'] for flower in flower_list) if flower_list else 0
+        new_flower = {
+            'id': max_id + 1,
+            'name': name,
+            'price': 300  # цена по умолчанию
+        }
+        flower_list.append(new_flower)
+    return redirect('/lab2/flowers/all')
+
+# Обработчик для удаления цветка по номеру (ОБНОВЛЕН)
+@app.route('/lab2/flowers/delete/<int:flower_id>')
+def delete_flower(flower_id):
+    # Ищем цветок по ID
+    flower_to_delete = None
+    for flower in flower_list:
+        if flower['id'] == flower_id:
+            flower_to_delete = flower
+            break
+    
+    # Если цветок не найден - возвращаем 404
+    if flower_to_delete is None:
+        abort(404)
+    
+    # Удаляем цветок из списка
+    flower_list.remove(flower_to_delete)
+    return redirect('/lab2/flowers/all')
+
+# Обработчик для удаления всех цветов (НОВЫЙ)
+@app.route('/lab2/flowers/delete_all')
+def delete_all_flowers():
     flower_list.clear()
-    flower_list.extend(['роза', 'тюльпан', 'незабудка', 'ромашка'])  # Восстанавливаем начальные
-    return '''
-<!doctype html>
-<html>
-    <head>
-        <title>Список очищен</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                margin: 40px;
-                background-color: #f5f5f5;
-            }}
-            .container {{
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                text-align: center;
-            }}
-            .success-message {{
-                background: #e8f6f3;
-                padding: 25px;
-                border-radius: 10px;
-                margin-bottom: 25px;
-                border-left: 5px solid #27ae60;
-            }}
-            .nav-links {{
-                margin-top: 25px;
-            }}
-            .nav-links a {{
-                display: inline-block;
-                margin: 0 8px;
-                padding: 10px 20px;
-                background: #3498db;
-                color: white;
-                text-decoration: none;
-                border-radius: 20px;
-                transition: background 0.3s ease;
-            }}
-            .nav-links a:hover {{
-                background: #2980b9;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="success-message">
-                <h1>Список цветов очищен!</h1>
-                <p>Все цветы были удалены из коллекции.</p>
-                <p><strong>Восстановлены начальные цветы:</strong> роза, тюльпан, незабудка, ромашка</p>
-            </div>
-            
-            <div class="nav-links">
-                <a href="/lab2/flowers/all">Посмотреть все цветы</a>
-                <a href="/lab2/add_flower/орхидея">Добавить новый цветок</a>
-                <a href="/">На главную</a>
-            </div>
-        </div>
-    </body>
-</html>
-'''
+    return redirect('/lab2/flowers/all')
 
 # Список фруктов
 fruits = [

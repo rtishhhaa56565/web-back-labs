@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список цветов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .flower-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .flower-info {
+            flex-grow: 1;
+        }
+        .flower-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        .flower-price {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .delete-link {
+            color: #e74c3c;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid #e74c3c;
+            border-radius: 5px;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+        .delete-link:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .delete-all {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 12px 20px;
+            background-color: #e74c3c;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .delete-all:hover {
+            background-color: #c0392b;
+        }
+        .add-form {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .add-form input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .add-form button {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-form button:hover {
+            background-color: #219a52;
+        }
+        .total-price {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .nav-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Список цветов</h1>
+        
+        {% if flowers %}
+            {% for flower in flowers %}
+            <div class="flower-item">
+                <div class="flower-info">
+                    <span class="flower-name">{{ flower.name }}</span> - 
+                    <span class="flower-price">{{ flower.price }} руб</span>
+                </div>
+                <a href="{{ url_for('delete_flower', flower_id=flower.id) }}" class="delete-link">удалить</a>
+            </div>
+            {% endfor %}
+            
+            <div class="total-price">
+                Общая стоимость: {{ total_price }} руб
+            </div>
+        {% else %}
+            <p style="text-align: center; color: #666;">Цветов нет в списке</p>
+        {% endif %}
+        
+        <a href="{{ url_for('delete_all_flowers') }}" class="delete-all">Удалить все цветы</a>
+        
+        <div class="add-form">
+            <h3>Добавить новый цветок:</h3>
+            <form action="{{ url_for('add_flower') }}" method="POST">
+                <input type="text" name="flower_name" placeholder="Название цветка" required>
+                <button type="submit">Добавить цветок</button>
+            </form>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/lab2/">← Назад к лабораторной 2</a>
+            <a href="/">На главную</a>
+        </div>
+    </div>
+</body>
+</html>
