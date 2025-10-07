@@ -32,6 +32,7 @@ def index():
                     <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
                     <li><a href="/lab2/flowers/all">Все цветы</a></li>
                     <li><a href="/lab2/filters">Фильтры</a></li>
+                    <li><a href="/lab2/filters">Ягоды</a></li>
                 </ul>
             </nav>
         </main>
@@ -594,6 +595,115 @@ books = [
 @app.route('/lab2/books')
 def books_list():
     return render_template('books.html', books=books)
+
+# Список ягод
+berries = [
+    {
+        'name': 'Клубника', 
+        'description': 'Сладкая красная ягода с сочной мякотью, богатая витамином C',
+        'image': 'images_yagody/strawberry.jpg'
+    },
+    {
+        'name': 'Малина', 
+        'description': 'Ароматная ягода с нежной текстурой, используется в десертах и варенье',
+        'image': 'images_yagody/raspberry.jpg'
+    },
+    {
+        'name': 'Черника', 
+        'description': 'Маленькая синяя ягода, полезна для зрения и памяти',
+        'image': 'images_yagody/blueberry.jpg'
+    },
+    {
+        'name': 'Ежевика', 
+        'description': 'Тёмная ягода с кисло-сладким вкусом, растёт на колючих кустах',
+        'image': 'images_yagody/blackberry.jpg'
+    },
+    {
+        'name': 'Смородина красная', 
+        'description': 'Прозрачная красная ягода с освежающим кисловатым вкусом',
+        'image': 'images_yagody/red_currant.jpg'
+    },
+    {
+        'name': 'Смородина чёрная', 
+        'description': 'Ароматная тёмная ягода с высоким содержанием витаминов',
+        'image': 'images_yagody/black_currant.jpg'
+    },
+    {
+        'name': 'Крыжовник', 
+        'description': 'Зелёная или красная ягода с полосами, используется в компотах',
+        'image': 'images_yagody/gooseberry.jpg'
+    },
+    {
+        'name': 'Земляника', 
+        'description': 'Лесная ягода с интенсивным ароматом, мельче садовой клубники',
+        'image': 'images_yagody/wild_strawberry.jpg'
+    },
+    {
+        'name': 'Брусника', 
+        'description': 'Красная горьковатая ягода, часто используется в мочёном виде',
+        'image': 'images_yagody/lingonberry.jpg'
+    },
+    {
+        'name': 'Клюква', 
+        'description': 'Кислая красная ягода, растёт на болотах, богата антиоксидантами',
+        'image': 'images_yagody/cranberry.jpg'
+    },
+    {
+        'name': 'Голубика', 
+        'description': 'Крупная синяя ягода с белым налётом, похожа на чернику',
+        'image': 'images_yagody/bilberry.jpg'
+    },
+    {
+        'name': 'Облепиха', 
+        'description': 'Оранжевая ягода с кислым вкусом, очень богата витаминами',
+        'image': 'images_yagody/sea_buckthorn.jpg'
+    },
+    {
+        'name': 'Шиповник', 
+        'description': 'Плоды розы, используются для витаминных чаёв и отваров',
+        'image': 'images_yagody/rosehip.jpg'
+    },
+    {
+        'name': 'Рябина', 
+        'description': 'Красные горькие ягоды, становятся сладкими после заморозков',
+        'image': 'images_yagody/rowan.jpg'
+    },
+    {
+        'name': 'Калина', 
+        'description': 'Красные ягоды с горьким вкусом, используются в народной медицине',
+        'image': 'images_yagody/viburnum.jpg'
+    },
+    {
+        'name': 'Ирга', 
+        'description': 'Сладкие синие ягоды, похожи на чернику, но более крупные',
+        'image': 'images_yagody/serviceberry.jpg'
+    },
+    {
+        'name': 'Жимолость', 
+        'description': 'Синие продолговатые ягоды с уникальным вкусом, созревают рано',
+        'image': 'images_yagody/honeysuckle.jpg'
+    },
+    {
+        'name': 'Боярышник', 
+        'description': 'Красные мучнистые ягоды, полезны для сердечно-сосудистой системы',
+        'image': 'images_yagody/hawthorn.jpg'
+    },
+    {
+        'name': 'Бузина', 
+        'description': 'Чёрные мелкие ягоды, используются в медицине и кулинарии',
+        'image': 'images_yagody/elderberry.jpg'
+    },
+    {
+        'name': 'Виноград', 
+        'description': 'Сочные ягоды разного цвета, используются для еды и виноделия',
+        'image': 'images_yagody/grape.jpg'
+    }
+]
+
+# Обработчик для отображения ягод
+@app.route('/lab2/berries')
+def berries_list():
+    return render_template('berries.html', berries=berries)
 
 # HTTP коды ошибок
 @app.route("/400")
