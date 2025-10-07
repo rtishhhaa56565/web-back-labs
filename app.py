@@ -26,6 +26,7 @@ def index():
             <nav>
                 <ul>
                     <li><a href="/lab1">Первая лабораторная</a></li>
+                    <li><a href="/lab2/">Вторая лабораторная</a></li>
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>
@@ -91,6 +92,86 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
         </nav>
 
         <a href="/">Вернуться на главную страницу сайта</a>
+    </body>
+    </html>
+    """
+
+# Страница второй лабораторной работы
+@app.route('/lab2/')
+def lab2():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Лабораторная работа 2</title>
+        <meta charset="utf-8">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+            h1 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+            }
+            .nav-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+            .nav-item {
+                background: #3498db;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 10px;
+                text-decoration: none;
+                transition: background 0.3s ease;
+            }
+            .nav-item:hover {
+                background: #2980b9;
+            }
+            .home-link {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .home-link a {
+                color: #3498db;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Лабораторная работа 2</h1>
+            <p>Выберите раздел для просмотра:</p>
+            
+            <div class="nav-grid">
+                <a href="/lab2/template" class="nav-item">Шаблоны</a>
+                <a href="/lab2/flowers/all" class="nav-item">Цветы</a>
+                <a href="/lab2/books" class="nav-item">Книги</a>
+                <a href="/lab2/berries" class="nav-item">Ягоды</a>
+                <a href="/lab2/filters" class="nav-item">Фильтры</a>
+                <a href="/lab2/calc/" class="nav-item">Калькулятор</a>
+                <a href="/lab2/a" class="nav-item">Без слэша</a>
+                <a href="/lab2/a/" class="nav-item">Со слэшем</a>
+            </div>
+            
+            <div class="home-link">
+                <a href="/">← На главную страницу</a>
+            </div>
+        </div>
     </body>
     </html>
     """
