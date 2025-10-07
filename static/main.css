@@ -5,18 +5,14 @@ body {
 
 main {
     margin-bottom: 40px;
-    padding: 10px;
-}
-
-header {
-    margin-bottom: 30px;
     padding: 20px;
-    background: lightgray;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 footer {
     margin-top: 20px;
-    padding: 10px;
+    padding: 20px;
     background: lightgray;
     text-align: right;
     position: fixed;

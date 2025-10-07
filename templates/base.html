@@ -3,16 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Арышева Арина. {% blockk lab %} {% endlock %}</title>
+    <title>Арышева Арина. {% block lab %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <style>
+        .header-nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        .header-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .home-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: 1px solid white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .home-link:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        .lab-title {
+            color: white;
+            font-size: 18px;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        WEB-программирование, часть 2. {{ self.lab() }}
-    </header>
+    <nav class="header-nav">
+        <div class="header-nav-container">
+            <a href="/" class="home-link">Главное меню</a>
+            <h1 class="lab-title">WEB-программирование, часть 2. {% block lab %}{% endblock %}</h1>
+        </div>
+    </nav>
+
     <main>
         {% block main %}{% endblock %}
     </main>
+
     <footer>
         &copy; Арышева Арина, ФБИ-34, 3 курс, 2025
     </footer>
