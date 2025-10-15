@@ -1,7 +1,9 @@
 from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
+from lab1 import lab1
 
 app = Flask(__name__)
+app.register_blueprint(lab1, url_prefix='/lab1')
 
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
@@ -55,56 +57,6 @@ def index():
     </html>
     """
 
-# Страница первой лабораторной работы
-@app.route("/lab1")
-def lab1():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Лабораторная 1</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>Лабораторная работа 1</h1>
-        
-        <p>Flask — фреймворк для создания веб-приложений на языке
-программирования Python, использующий набор инструментов
-Werkzeug, а также шаблонизатор Jinja2. Относится к категории так
-называемых микрофреймворков — минималистичных каркасов
-
-веб-приложений, сознательно предоставляющих лишь самые ба-
-зовые возможности.</p>
-
-        <h2>Список роутов</h2>
-        <nav>
-            <ul>
-                <li><a href="/">Главная страница (/)</a></li>
-                <li><a href="/index">Главная страница (/index)</a></li>
-                <li><a href="/lab1">Первая лабораторная (/lab1)</a></li>
-                <li><a href="/lab1/web">Главная страница лабораторной (/lab1/web)</a></li>
-                <li><a href="/lab1/author">Информация об авторе (/lab1/author)</a></li>
-                <li><a href="/lab1/image">Страница с изображением (/lab1/image)</a></li>
-                <li><a href="/lab1/visit">Счетчик посещений (/lab1/visit)</a></li>
-                <li><a href="/lab1/info">Перенаправление (/lab1/info)</a></li>
-                <li><a href="/lab1/error">Тест ошибки 500 (/lab1/error)</a></li>
-                <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
-                <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
-                <li><a href="/lab2/template">Шаблон с данными</a></li>
-                <li><a href="/lab2/template/anonymous">Шаблон анонимный</a></li>
-                <li><a href="/400">400 Bad Request</a></li>
-                <li><a href="/401">401 Unauthorized</a></li>
-                <li><a href="/402">402 Payment Required</a></li>
-                <li><a href="/403">403 Forbidden</a></li>
-                <li><a href="/405">405 Method Not Allowed</a></li>
-                <li><a href="/418">418 I'm a teapot</a></li>
-            </ul>
-        </nav>
-
-        <a href="/">Вернуться на главную страницу сайта</a>
-    </body>
-    </html>
-    """
 @app.route('/favicon.ico')
 def favicon():
     return app.send_static_file('favicons/favicon.ico')
@@ -234,117 +186,6 @@ def lab2():
     </body>
     </html>
     """
-
-# Обработчики для лабораторной работы 1
-@app.route("/lab1/web")
-def web():
-    headers = {
-        'Content-Language': 'ru',
-        'X-Developer': 'Student',
-        'X-Student-Group': 'FBI-34'
-    }
-    
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Главная страница лабораторной</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>web-сервер на flask</h1>
-        <nav>
-            <a href="/lab1/author">Автор</a> | 
-            <a href="/lab1/image">Картинка</a> | 
-            <a href="/lab1/visit">Счетчик</a> |
-            <a href="/lab1/info">Перенаправление</a>
-        </nav>
-        <a href="/lab1">В меню</a> | <a href="/">На главную</a>
-    </body>
-    </html>
-    """, 200, headers
-
-@app.route("/lab1/author")
-def author():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Информация об авторе</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <p>Студент: Арышева Арина Юрьевна</p>
-        <p>Группа: ФБИ-34</p>
-        <p>Факультет: ФБ</p>
-        <a href="/lab1/web">Назад</a> | <a href="/">На главную</a>
-    </body>
-    </html>
-    """
-
-@app.route("/lab1/image")
-def image():
-    image_path = url_for('static', filename='image(2).jpg')
-    headers = {
-        'Content-Language': 'ru',
-        'X-Developer': 'Student',
-        'X-Student-Group': 'FBI-34',
-        'X-Custom-Header': 'Flask-Lab-Work'
-    }
-    
-    return f'''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Страница с изображением</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>Страница с изображением</h1>
-        <img src="{image_path}" alt="Изображение" width="400">
-        <br>
-        <a href="/lab1/web">Назад</a> | <a href="/">На главную</a>
-    </body>
-    </html>
-    ''', 200, headers
-
-# Счетчик посещений
-visit_count = 0
-
-@app.route("/lab1/visit")
-def visit():
-    global visit_count
-    visit_count += 1
-    return f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Счетчик посещений</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>Счетчик посещений: {visit_count}</h1>
-        <a href="/lab1/visit/reset">Очистить счетчик</a>
-        <br>
-        <a href="/lab1/web">Назад</a> | <a href="/">На главную</a>
-    </body>
-    </html>
-    """
-
-@app.route("/lab1/visit/reset")
-def reset_visit_counter():
-    global visit_count
-    visit_count = 0
-    return redirect("/lab1/visit")
-
-@app.route("/lab1/info")
-def info():
-    return redirect("/lab1/author")
-
-@app.route("/lab1/error")
-def server_error():
-    return 10 / 0
-
 
 # Обработчик для вывода всех цветов с шаблоном (ОБНОВЛЕН)
 @app.route('/lab2/flowers/all')
