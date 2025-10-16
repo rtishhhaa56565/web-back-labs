@@ -44,6 +44,22 @@
             font-size: 18px;
             margin: 0;
         }
+        .lab-links {
+            display: flex;
+            gap: 15px;
+        }
+        .lab-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .lab-link:hover {
+            background: white;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +67,11 @@
         <div class="header-nav-container">
             <a href="/" class="home-link">Главное меню</a>
             <h1 class="lab-title">WEB-программирование, часть 2. {% block lab %}{% endblock %}</h1>
+            <div class="lab-links">
+                <a href="{{ url_for('lab1.index') }}" class="lab-link">Лаба 1</a>
+                <a href="{{ url_for('lab2.index') }}" class="lab-link">Лаба 2</a>
+                <a href="{{ url_for('lab3.index') }}" class="lab-link">Лаба 3</a>
+            </div>
         </div>
     </nav>
 

@@ -2,10 +2,12 @@ from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
 from lab1 import lab1
 from lab2 import lab2
+from lab3 import lab3
 
 app = Flask(__name__)
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
+app.register_blueprint(lab3, url_prefix='/lab3')
 
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
@@ -31,6 +33,7 @@ def index():
                 <ul>
                     <li><a href="/lab1">Первая лабораторная</a></li>
                     <li><a href="/lab2/">Вторая лабораторная</a></li>
+                    <li><a href="/lab3/">Третья лабораторная</a></li>
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>
