@@ -22,3 +22,16 @@ def clear_cookies():
     resp.set_cookie('age', '', expires=0)
     resp.set_cookie('color', '', expires=0)
     return resp
+
+@lab3.route('/form1', methods=['GET', 'POST'])
+def form1():
+    if request.method == 'POST':
+        user = request.form.get('user', '')
+        age = request.form.get('age', '')
+        gender = request.form.get('gender', '')
+    else:
+        user = request.args.get('user', '')
+        age = request.args.get('age', '')
+        gender = request.args.get('gender', '')
+    
+    return render_template('lab3/form1.html', user=user, age=age, gender=gender)
