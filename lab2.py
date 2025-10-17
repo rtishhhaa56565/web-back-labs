@@ -273,7 +273,7 @@ def a2():
 @lab2.route("/flowers/all")
 def all_flowers():
     total_price = sum(flower['price'] for flower in flower_list)
-    return render_template('flowers_all.html', 
+    return render_template('lab2/flowers_all.html', 
                          flowers=flower_list,
                          total_price=total_price)
 
@@ -319,7 +319,7 @@ def delete_all_flowers():
 # Обработчики шаблонов с передачей переменных
 @lab2.route("/template")
 def lab2_template():
-    return render_template('example.html', 
+    return render_template('lab2/example.html', 
                          name="Арышева Арина",
                          group="ФБИ-34", 
                          course=3,
@@ -327,7 +327,7 @@ def lab2_template():
 
 @lab2.route("/template/anonymous")
 def lab2_template_anonymous():
-    return render_template('example.html', fruits=fruits)
+    return render_template('lab2/example.html', fruits=fruits)
 
 # Обработчик для страницы фильтров
 @lab2.route("/filters")
@@ -471,9 +471,9 @@ def calc_two_numbers(a, b):
 # Обработчик для вывода списка книг
 @lab2.route("/books")
 def books_list():
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 # Обработчик для отображения ягод
 @lab2.route("/berries")
 def berries_list():
-    return render_template('berries.html', berries=berries)
+    return render_template('lab2/berries.html', berries=berries)

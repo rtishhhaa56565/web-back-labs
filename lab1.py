@@ -94,7 +94,7 @@ def author():
 
 @lab1.route("/image")
 def image():
-    image_path = url_for('static', filename='image(2).jpg')
+    image_path = url_for('static', filename='lab1/image(2).jpg')
     headers = {
         'Content-Language': 'ru',
         'X-Developer': 'Student',
