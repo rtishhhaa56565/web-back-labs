@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Арышева Арина. {% block lab %}{% endblock %}</title>
+    <title>Арышева Арина. {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     
     <!-- Фавиконки из папки favicons -->
@@ -66,11 +66,11 @@
     <nav class="header-nav">
         <div class="header-nav-container">
             <a href="/" class="home-link">Главное меню</a>
-            <h1 class="lab-title">WEB-программирование, часть 2. {% block lab %}{% endblock %}</h1>
+            <h1 class="lab-title">WEB-программирование, часть 2. <span id="lab-title-content">{% block lab %}{% endblock %}</span></h1>
             <div class="lab-links">
-                <a href="{{ url_for('lab1.index') }}" class="lab-link">Лаба 1</a>
-                <a href="{{ url_for('lab2.index') }}" class="lab-link">Лаба 2</a>
-                <a href="{{ url_for('lab3.index') }}" class="lab-link">Лаба 3</a>
+                <a href="/lab1/" class="lab-link">Лаба 1</a>
+                <a href="/lab2/" class="lab-link">Лаба 2</a>
+                <a href="/lab3/" class="lab-link">Лаба 3</a>
             </div>
         </div>
     </nav>
