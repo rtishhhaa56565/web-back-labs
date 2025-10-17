@@ -12,6 +12,15 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicons/favicon.ico') }}">
     
     <style>
+        body {
+            {% if request.cookies.get('color') %}
+            color: {{ request.cookies.get('color') }};
+            {% endif %}
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
         .header-nav {
             background: #2c3e50;
             padding: 15px 0;
@@ -59,6 +68,19 @@
         .lab-link:hover {
             background: white;
             color: #2c3e50;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid #eee;
         }
     </style>
 </head>

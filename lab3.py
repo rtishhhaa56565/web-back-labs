@@ -122,3 +122,24 @@ def success():
     return render_template('lab3/success.html',
                          drink=drink, sugar=sugar, milk=milk,
                          price=price)
+
+@lab3.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'set':
+            # Получаем цвет из формы
+            color = request.form.get('color_text') or request.form.get('color')
+            if color:
+                resp = make_response(redirect('/lab3/settings'))
+                resp.set_cookie('color', color)
+                return resp
+        
+        elif action == 'clear':
+            # Сбрасываем цвет
+            resp = make_response(redirect('/lab3/settings'))
+            resp.set_cookie('color', '', expires=0)
+            return resp
+    
+    return render_template('lab3/settings.html')

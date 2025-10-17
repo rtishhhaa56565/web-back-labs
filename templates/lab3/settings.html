@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Настройка цвета - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Настройка цвета{% endblock %}
+
+{% block main %}
+    <h1>Настройка цвета текста</h1>
+    
+    <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+        <p><strong>Текущий цвет текста:</strong> 
+            {% if request.cookies.get('color') %}
+                <span style="color: {{ request.cookies.get('color') }}">{{ request.cookies.get('color') }}</span>
+            {% else %}
+                <span style="color: #000">чёрный (по умолчанию)</span>
+            {% endif %}
+        </p>
+    </div>
+    
+    <form method="post">
+        <div style="margin-bottom: 20px;">
+            <label for="color"><strong>Выберите цвет текста:</strong></label><br>
+            <input type="color" id="color" name="color" value="{{ request.cookies.get('color', '#000000') }}" 
+                   style="margin: 10px 0; width: 100px; height: 40px;">
+            <br>
+            <small>Или введите значение вручную:</small>
+            <input type="text" name="color_text" placeholder="red, blue, #ff0000, rgb(255,0,0)" 
+                   value="{{ request.cookies.get('color', '') }}"
+                   style="width: 300px; padding: 8px; margin-top: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <button type="submit" name="action" value="set" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Установить цвет
+            </button>
+            <button type="submit" name="action" value="clear" style="padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                Сбросить цвет
+            </button>
+        </div>
+    </form>
+
+    <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
+        <h3>Примеры цветов для тестирования:</h3>
+        <ul>
+            <li><code>red</code> - красный</li>
+            <li><code>blue</code> - синий</li>
+            <li><code>green</code> - зелёный</li>
+            <li><code>purple</code> - фиолетовый</li>
+            <li><code>#ff5733</code> - оранжевый</li>
+            <li><code>rgb(17, 28, 240)</code> - синий (как в задании)</li>
+            <li><code>#d32f2f</code> - тёмно-красный</li>
+            <li><code>#388e3c</code> - тёмно-зелёный</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="/lab3/">← Назад к лабораторной работе 3</a>
+    </div>
+{% endblock %}
