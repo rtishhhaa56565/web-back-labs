@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Билет оформлен - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Билет оформлен{% endblock %}
+
+{% block main %}
+    <div style="text-align: center;">
+        <h1 style="color: #4CAF50;">✅ Билет успешно оформлен!</h1>
+        
+        <div style="margin: 30px auto; padding: 25px; background: #f8fff8; border-radius: 10px; border: 2px solid #4CAF50; max-width: 600px; text-align: left;">
+            <h2 style="text-align: center; color: #2c3e50;">Железнодорожный билет</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                <div><strong>ФИО пассажира:</strong></div>
+                <div>{{ fio }}</div>
+                
+                <div><strong>Тип билета:</strong></div>
+                <div>
+                    {% if is_child %}
+                        <span style="color: #e91e63;">Детский билет</span>
+                    {% else %}
+                        Взрослый билет
+                    {% endif %}
+                </div>
+                
+                <div><strong>Возраст:</strong></div>
+                <div>{{ age }} лет</div>
+                
+                <div><strong>Полка:</strong></div>
+                <div>
+                    {% if shelf == 'lower' %}Нижняя
+                    {% elif shelf == 'upper' %}Верхняя
+                    {% elif shelf == 'side_lower' %}Нижняя боковая
+                    {% elif shelf == 'side_upper' %}Верхняя боковая
+                    {% endif %}
+                </div>
+                
+                <div><strong>Дополнительные услуги:</strong></div>
+                <div>
+                    {% if linen %}Бельё<br>{% endif %}
+                    {% if luggage %}Багаж<br>{% endif %}
+                    {% if insurance %}Страховка<br>{% endif %}
+                    {% if not linen and not luggage and not insurance %}Нет дополнительных услуг{% endif %}
+                </div>
+                
+                <div><strong>Маршрут:</strong></div>
+                <div>{{ departure }} → {{ destination }}</div>
+                
+                <div><strong>Дата поездки:</strong></div>
+                <div>{{ date }}</div>
+            </div>
+            
+            <div style="margin-top: 25px; padding: 15px; background: #e8f5e9; border-radius: 5px;">
+                <h3 style="text-align: center; margin: 0; color: #2c3e50;">Стоимость билета</h3>
+                <div style="text-align: center; font-size: 24px; font-weight: bold; color: #d32f2f; margin: 10px 0;">
+                    {{ total_price }} руб.
+                </div>
+                
+                <div style="font-size: 14px; color: #666; text-align: center;">
+                    (Базовая стоимость: {{ base_price }} руб.
+                    {% if shelf_price > 0 %}+ полка: {{ shelf_price }} руб.{% endif %}
+                    {% if linen_price > 0 %}+ бельё: {{ linen_price }} руб.{% endif %}
+                    {% if luggage_price > 0 %}+ багаж: {{ luggage_price }} руб.{% endif %}
+                    {% if insurance_price > 0 %}+ страховка: {{ insurance_price }} руб.{% endif %})
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="/lab3/ticket" style="padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+                Оформить новый билет
+            </a>
+            <a href="/lab3/" style="padding: 10px 20px; background: #666; color: white; text-decoration: none; border-radius: 5px;">
+                Назад к лабораторным
+            </a>
+        </div>
+    </div>
+{% endblock %}

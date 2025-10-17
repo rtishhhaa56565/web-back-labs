@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Железнодорожный билет - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Железнодорожный билет{% endblock %}
+
+{% block main %}
+    <h1>Оформление железнодорожного билета</h1>
+    
+    <form method="post">
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <h3>Данные пассажира:</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="fio"><strong>ФИО пассажира:</strong></label>
+                <input type="text" id="fio" name="fio" placeholder="Иванов Иван Иванович" 
+                       value="{{ fio or '' }}" required style="width: 300px; padding: 8px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="age"><strong>Возраст:</strong></label>
+                <input type="number" id="age" name="age" min="1" max="120" 
+                       value="{{ age or '' }}" required style="width: 100px; padding: 8px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label><strong>Полка:</strong></label><br>
+                <input type="radio" id="lower" name="shelf" value="lower" {% if shelf == 'lower' %}checked{% endif %} required>
+                <label for="lower">Нижняя (+100 руб.)</label><br>
+                
+                <input type="radio" id="upper" name="shelf" value="upper" {% if shelf == 'upper' %}checked{% endif %}>
+                <label for="upper">Верхняя</label><br>
+                
+                <input type="radio" id="side_lower" name="shelf" value="side_lower" {% if shelf == 'side_lower' %}checked{% endif %}>
+                <label for="side_lower">Нижняя боковая (+100 руб.)</label><br>
+                
+                <input type="radio" id="side_upper" name="shelf" value="side_upper" {% if shelf == 'side_upper' %}checked{% endif %}>
+                <label for="side_upper">Верхняя боковая</label>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <input type="checkbox" id="linen" name="linen" {% if linen %}checked{% endif %}>
+                <label for="linen"><strong>Бельё (+75 руб.)</strong></label><br>
+                
+                <input type="checkbox" id="luggage" name="luggage" {% if luggage %}checked{% endif %}>
+                <label for="luggage"><strong>Багаж (+250 руб.)</strong></label><br>
+                
+                <input type="checkbox" id="insurance" name="insurance" {% if insurance %}checked{% endif %}>
+                <label for="insurance"><strong>Страховка (+150 руб.)</strong></label>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <h3>Маршрут:</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="departure"><strong>Пункт выезда:</strong></label>
+                <input type="text" id="departure" name="departure" placeholder="Москва" 
+                       value="{{ departure or '' }}" required style="width: 200px; padding: 8px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="destination"><strong>Пункт назначения:</strong></label>
+                <input type="text" id="destination" name="destination" placeholder="Санкт-Петербург" 
+                       value="{{ destination or '' }}" required style="width: 200px; padding: 8px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="date"><strong>Дата поездки:</strong></label>
+                <input type="date" id="date" name="date" value="{{ date or '' }}" required style="padding: 8px;">
+            </div>
+        </div>
+        
+        <div>
+            <button type="submit" style="padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                Оформить билет
+            </button>
+            <a href="/lab3/" style="margin-left: 15px; color: #666;">Отмена</a>
+        </div>
+    </form>
+
+    {% if errors %}
+        <div style="margin-top: 20px; padding: 15px; background: #ffebee; border-radius: 5px; border: 1px solid #f44336;">
+            <h3 style="color: #d32f2f;">Ошибки в форме:</h3>
+            <ul>
+                {% for error in errors %}
+                    <li style="color: #d32f2f;">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="/lab3/">← Назад к лабораторной работе 3</a>
+    </div>
+{% endblock %}
