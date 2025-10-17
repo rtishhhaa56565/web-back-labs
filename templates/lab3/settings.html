@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Настройка цвета - Лабораторная работа 3{% endblock %}
-{% block lab %}Лабораторная работа 3 - Настройка цвета{% endblock %}
+{% block title %}Настройки - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Настройки{% endblock %}
 
 {% block main %}
-    <h1>Настройка цвета текста</h1>
+    <h1>Настройки отображения</h1>
     
     <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
         <p><strong>Текущий цвет текста:</strong> 
@@ -14,6 +14,13 @@
                 <span style="color: #000">чёрный (по умолчанию)</span>
             {% endif %}
         </p>
+        
+        <p><strong>Установленные cookie:</strong></p>
+        <ul>
+            {% for key, value in request.cookies.items() %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
     </div>
     
     <form method="post">
@@ -33,7 +40,7 @@
                 Установить цвет
             </button>
             <button type="submit" name="action" value="clear" style="padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-                Сбросить цвет
+                Очистить ВСЕ cookie
             </button>
         </div>
     </form>

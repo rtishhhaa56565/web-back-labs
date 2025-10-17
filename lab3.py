@@ -234,3 +234,25 @@ def ticket():
     
     # GET запрос - показываем пустую форму
     return render_template('lab3/ticket.html')
+
+@lab3.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'set':
+            # Получаем цвет из формы
+            color = request.form.get('color_text') or request.form.get('color')
+            if color:
+                resp = make_response(redirect('/lab3/settings'))
+                resp.set_cookie('color', color)
+                return resp
+        
+        elif action == 'clear':
+            # Сбрасываем ВСЕ куки, установленные в settings
+            resp = make_response(redirect('/lab3/settings'))
+            resp.set_cookie('color', '', expires=0)
+            # Добавьте сюда другие куки, если они устанавливаются в settings
+            return resp
+    
+    return render_template('lab3/settings.html')
