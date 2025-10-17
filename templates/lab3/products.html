@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск товаров - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Поиск товаров{% endblock %}
+
+{% block main %}
+    <h1>Поиск смартфона по цене</h1>
+    
+    <form method="post">
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <h3>Диапазон цен:</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label for="min_price"><strong>Минимальная цена:</strong></label>
+                    <input type="number" id="min_price" name="min_price" 
+                           placeholder="{{ min_product_price }}" 
+                           value="{{ min_price or '' }}"
+                           min="0" style="width: 100%; padding: 8px; margin-top: 5px;">
+                </div>
+                
+                <div>
+                    <label for="max_price"><strong>Максимальная цена:</strong></label>
+                    <input type="number" id="max_price" name="max_price" 
+                           placeholder="{{ max_product_price }}" 
+                           value="{{ max_price or '' }}"
+                           min="0" style="width: 100%; padding: 8px; margin-top: 5px;">
+                </div>
+            </div>
+            
+            <div style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                Диапазон цен в каталоге: от {{ min_product_price }} до {{ max_product_price }} руб.
+            </div>
+            
+            <div>
+                <button type="submit" name="action" value="search" 
+                        style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                     Искать
+                </button>
+                <button type="submit" name="action" value="reset" 
+                        style="padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                     Сброс
+                </button>
+            </div>
+        </div>
+    </form>
+
+    {% if filtered_products is defined %}
+        <div style="margin-top: 20px; padding: 15px; background: #e8f4fd; border-radius: 5px;">
+            <h3>Результаты поиска:</h3>
+            <p><strong>Найдено товаров:</strong> {{ filtered_products|length }}</p>
+            
+            {% if search_range %}
+                <p><strong>Диапазон цен:</strong> 
+                    {% if search_range.min_price %}от {{ search_range.min_price }}{% endif %}
+                    {% if search_range.max_price %}до {{ search_range.max_price }}{% endif %}
+                    руб.
+                </p>
+            {% endif %}
+        </div>
+        
+        {% if filtered_products %}
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                {% for product in filtered_products %}
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50;">{{ product.name }}</h4>
+                        <p style="margin: 5px 0; font-size: 20px; font-weight: bold; color: #d32f2f;">
+                            {{ product.price }} руб.
+                        </p>
+                        <p style="margin: 5px 0; color: #666;">
+                            <strong>Бренд:</strong> {{ product.brand }}
+                        </p>
+                        <p style="margin: 5px 0; color: #666;">
+                            <strong>Цвет:</strong> {{ product.color }}
+                        </p>
+                        <p style="margin: 5px 0; color: #666;">
+                            <strong>Память:</strong> {{ product.storage }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="margin-top: 20px; padding: 20px; background: #ffebee; border-radius: 5px; text-align: center;">
+                <h3 style="color: #d32f2f;">😔 Товары не найдены</h3>
+                <p>Попробуйте изменить диапазон цен</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
+            <p>Всего товаров в каталоге: {{ all_products|length }}</p>
+            <p>Установите диапазон цен для поиска</p>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="/lab3/">← Назад к лабораторной работе 3</a>
+    </div>
+{% endblock %}
