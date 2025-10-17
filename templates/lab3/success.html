@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ оплачен - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Успешная оплата{% endblock %}
+
+{% block main %}
+    <div style="text-align: center; padding: 30px;">
+        <div style="font-size: 48px; color: #4CAF50;">✅</div>
+        <h1 style="color: #4CAF50;">Спасибо, ваш заказ оплачен!</h1>
+        
+        <div style="margin: 30px auto; padding: 20px; background: #f0fff0; border-radius: 10px; border: 2px solid #4CAF50; max-width: 500px;">
+            <h2>Детали заказа:</h2>
+            <p><strong>Напиток:</strong> 
+                {% if drink == 'coffee' %}Кофе
+                {% elif drink == 'black-tea' %}Чёрный чай
+                {% elif drink == 'green-tea' %}Зелёный чай
+                {% endif %}
+            </p>
+            <p><strong>Добавки:</strong> 
+                {% if sugar %}Сахар{% endif %}
+                {% if milk %} Молоко{% endif %}
+                {% if not sugar and not milk %}Без добавок{% endif %}
+            </p>
+            <p style="font-size: 20px; font-weight: bold; color: #d32f2f;">
+                Сумма оплаты: {{ price }} рублей
+            </p>
+            <p><strong>Ожидайте доставку!</strong></p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="/lab3/order" style="padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+                Сделать новый заказ
+            </a>
+            <a href="/lab3/" style="padding: 10px 20px; background: #666; color: white; text-decoration: none; border-radius: 5px;">
+                Назад к лабораторным
+            </a>
+        </div>
+    </div>
+{% endblock %}

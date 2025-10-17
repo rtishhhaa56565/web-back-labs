@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ напитка - Лабораторная работа 3{% endblock %}
+{% block lab %}Лабораторная работа 3 - Заказ напитка{% endblock %}
+
+{% block main %}
+    <h1>Заказ напитка</h1>
+    
+    <form method="post" action="/lab3/pay">
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <h3>Выберите напиток:</h3>
+            <div style="margin-left: 20px;">
+                <input type="radio" id="coffee" name="drink" value="coffee" required>
+                <label for="coffee"><strong>Кофе</strong> - 200 руб.</label><br>
+                
+                <input type="radio" id="black_tea" name="drink" value="black-tea">
+                <label for="black_tea"><strong>Чёрный чай</strong> - 150 руб.</label><br>
+                
+                <input type="radio" id="green_tea" name="drink" value="green-tea">
+                <label for="green_tea"><strong>Зелёный чай</strong> - 150 руб.</label>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <h3>Добавки:</h3>
+            <div style="margin-left: 20px;">
+                <input type="checkbox" id="sugar" name="sugar">
+                <label for="sugar"><strong>Сахар</strong> - 10 руб.</label><br>
+                
+                <input type="checkbox" id="milk" name="milk">
+                <label for="milk"><strong>Молоко</strong> - 20 руб.</label>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Перейти к оплате
+            </button>
+            <a href="/lab3/" style="margin-left: 15px; color: #666;">Отмена</a>
+        </div>
+    </form>
+
+    <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
+        <h3>Информация о заказе:</h3>
+        <ul>
+            <li>Обязательно выберите один напиток</li>
+            <li>Добавки можно выбрать по желанию</li>
+            <li>После нажатия кнопки вы перейдёте к оплате</li>
+        </ul>
+    </div>
+{% endblock %}
