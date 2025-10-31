@@ -274,3 +274,47 @@ def profile():
                          user_data=user_data,
                          lang=lang,
                          theme=theme)
+
+@lab4.route('/fridge', methods=['GET', 'POST'])
+def fridge():
+    if request.method == 'POST':
+        temperature = request.form.get('temperature')
+        
+        # Проверка на пустое значение
+        if not temperature:
+            return render_template('lab4/fridge-result.html', 
+                                error='Ошибка: не задана температура')
+        
+        try:
+            temp = float(temperature)
+            
+            # Проверка диапазонов температуры
+            if temp < -12:
+                return render_template('lab4/fridge-result.html', 
+                                    error='Не удалось установить температуру — слишком низкое значение')
+            elif temp > -1:
+                return render_template('lab4/fridge-result.html', 
+                                    error='Не удалось установить температуру — слишком высокое значение')
+            elif -12 <= temp <= -9:
+                snowflakes = 3
+                message = f'Установлена температура: {temp}°C'
+            elif -8 <= temp <= -5:
+                snowflakes = 2
+                message = f'Установлена температура: {temp}°C'
+            elif -4 <= temp <= -1:
+                snowflakes = 1
+                message = f'Установлена температура: {temp}°C'
+            else:
+                snowflakes = 0
+                message = f'Установлена температура: {temp}°C'
+            
+            return render_template('lab4/fridge-result.html', 
+                                message=message, 
+                                snowflakes=snowflakes,
+                                temperature=temp)
+            
+        except ValueError:
+            return render_template('lab4/fridge-result.html', 
+                                error='Ошибка: введите корректное число')
+    
+    return render_template('lab4/fridge-form.html')

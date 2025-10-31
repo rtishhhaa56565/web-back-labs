@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block lab %}Холодильник{% endblock %}
+
+{% block main %}
+    <h1>Установка температуры холодильника</h1>
+    
+    <form method="post">
+        <div style="margin-bottom: 15px;">
+            <label for="temperature">Температура (°C):</label><br>
+            <input type="number" id="temperature" name="temperature" step="0.1" 
+                   placeholder="Введите температуру от -12 до -1" 
+                   style="padding: 8px; width: 250px;">
+        </div>
+        
+        <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px;">
+            Установить температуру
+        </button>
+    </form>
+    
+    <div style="margin-top: 20px; color: #666;">
+        <p><strong>Диапазоны температур:</strong></p>
+        <ul>
+            <li>-12°C до -9°C: ❄❄❄ (3 снежинки)</li>
+            <li>-8°C до -5°C: ❄❄ (2 снежинки)</li>
+            <li>-4°C до -1°C: ❄ (1 снежинка)</li>
+        </ul>
+    </div>
+{% endblock %}
