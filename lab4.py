@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for
 
 lab4 = Blueprint('lab4', __name__)
 
@@ -113,9 +113,13 @@ def tree():
     
     if request.method == 'POST':
         operation = request.form.get('operation')
-        if operation == 'plant':
+        if operation == 'plant' and tree_count < 10:  # Максимум 10 деревьев
             tree_count += 1
-        elif operation == 'cut' and tree_count > 0:
+        elif operation == 'cut' and tree_count > 0:   # Минимум 0 деревьев
             tree_count -= 1
+        
+        # После обработки POST делаем редирект на GET-запрос
+        return redirect(url_for('lab4.tree'))
     
+    # GET-запрос - просто отображаем страницу
     return render_template('lab4/tree.html', tree_count=tree_count)
