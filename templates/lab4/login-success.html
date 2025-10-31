@@ -3,9 +3,9 @@
 {% block lab %}Авторизация{% endblock %}
 
 {% block main %}
-    <h1>Добро пожаловать!</h1>
+    <h1>Добро пожаловать, {{ username }}!</h1>
     <div style="color: green; margin-bottom: 20px;">
-        Вы успешно авторизовались как <strong>{{ username }}</strong>
+        Вы успешно авторизовались в системе
     </div>
     
     <form action="/lab4/logout" method="post">

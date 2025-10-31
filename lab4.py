@@ -124,12 +124,28 @@ def tree():
     # GET-запрос - просто отображаем страницу
     return render_template('lab4/tree.html', tree_count=tree_count)
 
-# Список пользователей (логин: пароль)
+# Расширенный список пользователей (логин: {данные})
 users = {
-    'alex': '123',
-    'user': '456',
-    'admin': 'admin',
-    'test': 'test'
+    'arina': {
+        'password': '123',
+        'name': 'Арышева Арина',
+        'gender': 'женский'
+    },
+    'user': {
+        'password': '456', 
+        'name': 'Мария Сидорова',
+        'gender': 'женский'
+    },
+    'admin': {
+        'password': 'admin',
+        'name': 'Администратор Системы',
+        'gender': 'мужской'
+    },
+    'test': {
+        'password': 'test',
+        'name': 'Тестовый Пользователь',
+        'gender': 'женский'
+    }
 }
 
 @lab4.route('/login', methods=['GET', 'POST'])
@@ -138,7 +154,6 @@ def login():
         action = request.form.get('action')
         
         if action == 'cancel':
-            # Выход из системы - удаляем данные из сессии
             session.pop('username', None)
             return redirect(url_for('lab4.login'))
         
@@ -146,30 +161,116 @@ def login():
             username = request.form.get('username')
             password = request.form.get('password')
             
-            # Проверка логина и пароля в списке пользователей
-            if username in users and users[username] == password:
-                # Сохраняем имя пользователя в сессии
+            # Проверка на пустые значения
+            if not username:
+                return render_template('lab4/login.html', 
+                                    error='Не введён логин', 
+                                    username=username)
+            
+            if not password:
+                return render_template('lab4/login.html', 
+                                    error='Не введён пароль', 
+                                    username=username)
+            
+            # Проверка логина и пароля
+            if username in users and users[username]['password'] == password:
                 session['username'] = username
                 return redirect(url_for('lab4.login'))
             else:
-                # Неверные данные
-                return render_template('lab4/login.html', error='Неверные логин и/или пароль')
+                return render_template('lab4/login.html', 
+                                    error='Неверные логин и/или пароль', 
+                                    username=username)
         
         elif action == 'register':
-            # Перенаправляем на страницу регистрации
             return redirect(url_for('lab4.register'))
     
-    # GET-запрос - проверяем авторизацию через сессию
+    # GET-запрос
     username = session.get('username')
     if username:
-        # Пользователь авторизован
-        return render_template('lab4/login-success.html', username=username)
+        user_data = users.get(username, {})
+        return render_template('lab4/login-success.html', 
+                             username=user_data.get('name', username))
     else:
-        # Пользователь не авторизован
         return render_template('lab4/login.html')
+
+@lab4.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'cancel':
+            return redirect(url_for('lab4.login'))
+        
+        elif action == 'register':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+            full_name = request.form.get('full_name')
+            gender = request.form.get('gender')
+            
+            # Валидация данных
+            if not username:
+                return render_template('lab4/register.html', error='Не введён логин')
+            
+            if not password:
+                return render_template('lab4/register.html', error='Не введён пароль')
+            
+            if not full_name:
+                return render_template('lab4/register.html', error='Не введено имя')
+            
+            if password != confirm_password:
+                return render_template('lab4/register.html', error='Пароли не совпадают')
+            
+            if username in users:
+                return render_template('lab4/register.html', error='Пользователь с таким логином уже существует')
+            
+            if len(username) < 3:
+                return render_template('lab4/register.html', error='Логин должен содержать минимум 3 символа')
+            
+            if len(password) < 3:
+                return render_template('lab4/register.html', error='Пароль должен содержать минимум 3 символа')
+            
+            # Регистрация нового пользователя с расширенными данными
+            users[username] = {
+                'password': password,
+                'name': full_name,
+                'gender': gender
+            }
+            return render_template('lab4/register-success.html', username=full_name)
+    
+    return render_template('lab4/register.html')
 
 @lab4.route('/logout', methods=['POST'])
 def logout():
-    # Удаляем имя пользователя из сессии
     session.pop('username', None)
     return redirect(url_for('lab4.login'))
+
+@lab4.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        session['lang'] = request.form.get('lang', 'ru')
+        session['theme'] = request.form.get('theme', 'light')
+        return redirect(url_for('lab4.settings'))
+    
+    current_lang = session.get('lang', 'ru')
+    current_theme = session.get('theme', 'light')
+    
+    return render_template('lab4/settings.html', 
+                         current_lang=current_lang, 
+                         current_theme=current_theme)
+
+@lab4.route('/profile')
+def profile():
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('lab4.login'))
+    
+    user_data = users.get(username, {})
+    lang = session.get('lang', 'ru')
+    theme = session.get('theme', 'light')
+    
+    return render_template('lab4/profile.html', 
+                         username=user_data.get('name', username),
+                         user_data=user_data,
+                         lang=lang,
+                         theme=theme)

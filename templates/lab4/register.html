@@ -6,23 +6,40 @@
     <h1>Регистрация нового пользователя</h1>
     
     {% if error %}
-        <div style="color: red; margin-bottom: 20px;">{{ error }}</div>
+        <div style="color: #d32f2f; font-weight: bold; background-color: #ffebee; padding: 10px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f44336;">
+            {{ error }}
+        </div>
     {% endif %}
     
     <form method="post">
         <div style="margin-bottom: 15px;">
-            <label for="username">Имя пользователя:</label><br>
-            <input type="text" id="username" name="username" required minlength="3">
+            <label for="username">Логин:</label><br>
+            <input type="text" id="username" name="username" required minlength="3" placeholder="Введите логин">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="full_name">Имя и фамилия:</label><br>
+            <input type="text" id="full_name" name="full_name" required placeholder="Введите ваше имя">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="gender">Пол:</label><br>
+            <select id="gender" name="gender" required>
+                <option value="">Выберите пол</option>
+                <option value="мужской">Мужской</option>
+                <option value="женский">Женский</option>
+                <option value="другой">Другой</option>
+            </select>
         </div>
         
         <div style="margin-bottom: 15px;">
             <label for="password">Пароль:</label><br>
-            <input type="password" id="password" name="password" required minlength="3">
+            <input type="password" id="password" name="password" required minlength="3" placeholder="Введите пароль">
         </div>
         
         <div style="margin-bottom: 15px;">
             <label for="confirm_password">Подтвердите пароль:</label><br>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+            <input type="password" id="confirm_password" name="confirm_password" required placeholder="Повторите пароль">
         </div>
         
         <div>
