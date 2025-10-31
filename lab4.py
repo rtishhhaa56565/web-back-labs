@@ -103,3 +103,19 @@ def power():
             return render_template('lab4/power-result.html', error="Введите корректные числа")
     
     return render_template('lab4/power-form.html')
+
+# Глобальная переменная для хранения количества деревьев
+tree_count = 0
+
+@lab4.route('/tree', methods=['GET', 'POST'])
+def tree():
+    global tree_count
+    
+    if request.method == 'POST':
+        operation = request.form.get('operation')
+        if operation == 'plant':
+            tree_count += 1
+        elif operation == 'cut' and tree_count > 0:
+            tree_count -= 1
+    
+    return render_template('lab4/tree.html', tree_count=tree_count)
