@@ -6,6 +6,8 @@ from lab3 import lab3
 from lab4 import lab4
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here_12345' 
+
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
 app.register_blueprint(lab3, url_prefix='/lab3')
