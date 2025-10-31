@@ -127,9 +127,16 @@ def tree():
 # Глобальная переменная для хранения текущего пользователя
 current_user = None
 
+# Список пользователей (логин: пароль)
+users = {
+    'alex': '123',
+    'user': '456',
+    'admin': 'admin',
+    'test': 'test'
+}
+
 @lab4.route('/login', methods=['GET', 'POST'])
 def login():
-    # Глобальная переменная для хранения информации о пользователе
     global current_user
     
     if request.method == 'POST':
@@ -144,13 +151,17 @@ def login():
             username = request.form.get('username')
             password = request.form.get('password')
             
-            # Проверка логина и пароля
-            if username == 'alex' and password == '123':
+            # Проверка логина и пароля в списке пользователей
+            if username in users and users[username] == password:
                 current_user = username
                 return redirect(url_for('lab4.login'))
             else:
                 # Неверные данные
                 return render_template('lab4/login.html', error='Неверные логин и/или пароль')
+        
+        elif action == 'register':
+            # Перенаправляем на страницу регистрации
+            return redirect(url_for('lab4.register'))
     
     # GET-запрос - отображаем страницу
     if current_user:
@@ -159,3 +170,42 @@ def login():
     else:
         # Пользователь не авторизован
         return render_template('lab4/login.html')
+
+@lab4.route('/register', methods=['GET', 'POST'])
+def register():
+    global users
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'cancel':
+            # Отмена регистрации - возврат на страницу авторизации
+            return redirect(url_for('lab4.login'))
+        
+        elif action == 'register':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+            
+            # Валидация данных
+            if not username or not password:
+                return render_template('lab4/register.html', error='Все поля должны быть заполнены')
+            
+            if password != confirm_password:
+                return render_template('lab4/register.html', error='Пароли не совпадают')
+            
+            if username in users:
+                return render_template('lab4/register.html', error='Пользователь с таким логином уже существует')
+            
+            if len(username) < 3:
+                return render_template('lab4/register.html', error='Логин должен содержать минимум 3 символа')
+            
+            if len(password) < 3:
+                return render_template('lab4/register.html', error='Пароль должен содержать минимум 3 символа')
+            
+            # Регистрация нового пользователя
+            users[username] = password
+            return render_template('lab4/register-success.html', username=username)
+    
+    # GET-запрос - отображаем форму регистрации
+    return render_template('lab4/register.html')

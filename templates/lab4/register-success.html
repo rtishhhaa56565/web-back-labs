@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block lab %}Регистрация{% endblock %}
+
+{% block main %}
+    <h1>Регистрация успешна!</h1>
+    <div style="color: green; margin-bottom: 20px;">
+        Пользователь <strong>{{ username }}</strong> успешно зарегистрирован
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <a href="/lab4/login">Войти в систему</a>
+    </div>
+{% endblock %}
