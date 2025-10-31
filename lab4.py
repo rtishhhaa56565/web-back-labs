@@ -11,6 +11,95 @@ def div():
     if request.method == 'POST':
         x1 = request.form.get('x1')
         x2 = request.form.get('x2')
-        # Здесь будет обработка деления
-        return f"Результат: {x1} / {x2}"
-    return render_template('lab4/div-form.html')  
+        
+        if not x1 or not x2:
+            return render_template('lab4/div-result.html', error="Оба поля должны быть заполнены")
+        
+        try:
+            x1 = float(x1)
+            x2 = float(x2)
+            
+            if x2 == 0:
+                return render_template('lab4/div-result.html', error="Деление на ноль невозможно")
+            
+            result = x1 / x2
+            return render_template('lab4/div-result.html', x1=x1, x2=x2, result=result)
+            
+        except ValueError:
+            return render_template('lab4/div-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/div-form.html')
+
+@lab4.route('/sum', methods=['GET', 'POST'])
+def sum_numbers():
+    if request.method == 'POST':
+        x1 = request.form.get('x1', '0')
+        x2 = request.form.get('x2', '0')
+        
+        try:
+            x1 = float(x1) if x1 else 0
+            x2 = float(x2) if x2 else 0
+            result = x1 + x2
+            return render_template('lab4/sum-result.html', x1=x1, x2=x2, result=result)
+        except ValueError:
+            return render_template('lab4/sum-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/sum-form.html')
+
+@lab4.route('/multiply', methods=['GET', 'POST'])
+def multiply():
+    if request.method == 'POST':
+        x1 = request.form.get('x1', '1')
+        x2 = request.form.get('x2', '1')
+        
+        try:
+            x1 = float(x1) if x1 else 1
+            x2 = float(x2) if x2 else 1
+            result = x1 * x2
+            return render_template('lab4/multiply-result.html', x1=x1, x2=x2, result=result)
+        except ValueError:
+            return render_template('lab4/multiply-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/multiply-form.html')
+
+@lab4.route('/subtract', methods=['GET', 'POST'])
+def subtract():
+    if request.method == 'POST':
+        x1 = request.form.get('x1')
+        x2 = request.form.get('x2')
+        
+        if not x1 or not x2:
+            return render_template('lab4/subtract-result.html', error="Оба поля должны быть заполнены")
+        
+        try:
+            x1 = float(x1)
+            x2 = float(x2)
+            result = x1 - x2
+            return render_template('lab4/subtract-result.html', x1=x1, x2=x2, result=result)
+        except ValueError:
+            return render_template('lab4/subtract-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/subtract-form.html')
+
+@lab4.route('/power', methods=['GET', 'POST'])
+def power():
+    if request.method == 'POST':
+        x1 = request.form.get('x1')
+        x2 = request.form.get('x2')
+        
+        if not x1 or not x2:
+            return render_template('lab4/power-result.html', error="Оба поля должны быть заполнены")
+        
+        try:
+            x1 = float(x1)
+            x2 = float(x2)
+            
+            if x1 == 0 and x2 == 0:
+                return render_template('lab4/power-result.html', error="Ноль в нулевой степени не определен")
+            
+            result = x1 ** x2
+            return render_template('lab4/power-result.html', x1=x1, x2=x2, result=result)
+        except ValueError:
+            return render_template('lab4/power-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/power-form.html')
