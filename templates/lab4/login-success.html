@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block lab %}Авторизация{% endblock %}
+
+{% block main %}
+    <h1>Добро пожаловать!</h1>
+    <div style="color: green; margin-bottom: 20px;">
+        Вы успешно авторизовались как <strong>{{ username }}</strong>
+    </div>
+    
+    <form method="post">
+        <button type="submit" name="action" value="cancel">Выйти</button>
+    </form>
+    
+    <div style="margin-top: 20px;">
+        <a href="/lab4/login">Назад к авторизации</a>
+    </div>
+{% endblock %}

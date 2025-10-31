@@ -123,3 +123,39 @@ def tree():
     
     # GET-запрос - просто отображаем страницу
     return render_template('lab4/tree.html', tree_count=tree_count)
+
+# Глобальная переменная для хранения текущего пользователя
+current_user = None
+
+@lab4.route('/login', methods=['GET', 'POST'])
+def login():
+    # Глобальная переменная для хранения информации о пользователе
+    global current_user
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'cancel':
+            # Сброс авторизации при отмене
+            current_user = None
+            return redirect(url_for('lab4.login'))
+        
+        elif action == 'login':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            
+            # Проверка логина и пароля
+            if username == 'alex' and password == '123':
+                current_user = username
+                return redirect(url_for('lab4.login'))
+            else:
+                # Неверные данные
+                return render_template('lab4/login.html', error='Неверные логин и/или пароль')
+    
+    # GET-запрос - отображаем страницу
+    if current_user:
+        # Пользователь авторизован
+        return render_template('lab4/login-success.html', username=current_user)
+    else:
+        # Пользователь не авторизован
+        return render_template('lab4/login.html')
