@@ -1,11 +1,33 @@
-{% extends "base.html" %}
+from flask import Blueprint, render_template, request
 
-{% block lab %}Лабораторная работа 4{% endblock %}
+lab4 = Blueprint('lab4', __name__)
 
-{% block main %}
-    <h1>Формы (POST)</h1>
-    <div>Тема лабораторной - Формы (POST). Список сделанных страниц:</div>
-    <ol>
-        <li><a href="">***</a></li>
-    </ol>
-{% endblock %}
+@lab4.route('/')
+def lab():
+    return render_template('lab4/lab4.html')
+
+@lab4.route('/div', methods=['GET', 'POST'])
+def div():
+    if request.method == 'POST':
+        x1 = request.form.get('x1')
+        x2 = request.form.get('x2')
+        
+        # Проверка на пустые значения
+        if not x1 or not x2:
+            return render_template('lab4/div-result.html', error="Оба поля должны быть заполнены")
+        
+        try:
+            x1 = float(x1)
+            x2 = float(x2)
+            
+            # Проверка деления на ноль
+            if x2 == 0:
+                return render_template('lab4/div-result.html', error="Деление на ноль невозможно")
+            
+            result = x1 / x2
+            return render_template('lab4/div-result.html', x1=x1, x2=x2, result=result)
+            
+        except ValueError:
+            return render_template('lab4/div-result.html', error="Введите корректные числа")
+    
+    return render_template('lab4/div-form.html')
