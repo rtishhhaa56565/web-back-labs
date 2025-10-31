@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block lab %}Заказ зерна{% endblock %}
+
+{% block main %}
+    <h1>Форма заказа зерна</h1>
+    
+    <form method="post">
+        <div style="margin-bottom: 15px;">
+            <label for="grain_type">Тип зерна:</label><br>
+            <select id="grain_type" name="grain_type" required style="padding: 8px; width: 200px;">
+                <option value="">Выберите зерно</option>
+                <option value="barley">Ячмень - 12 000 руб/т</option>
+                <option value="oats">Овёс - 8 500 руб/т</option>
+                <option value="wheat">Пшеница - 9 000 руб/т</option>
+                <option value="rye">Рожь - 15 000 руб/т</option>
+            </select>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="weight">Вес (тонны):</label><br>
+            <input type="number" id="weight" name="weight" step="0.1" min="0.1" 
+                   placeholder="Введите вес в тоннах" 
+                   style="padding: 8px; width: 200px;" required>
+        </div>
+        
+        <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px;">
+            Оформить заказ
+        </button>
+    </form>
+    
+    <div style="margin-top: 20px; color: #666;">
+        <p><strong>Условия заказа:</strong></p>
+        <ul>
+            <li>При заказе более 10 тонн - скидка 10%</li>
+            <li>Максимальный заказ - 100 тонн</li>
+        </ul>
+    </div>
+{% endblock %}

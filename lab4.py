@@ -318,3 +318,72 @@ def fridge():
                                 error='Ошибка: введите корректное число')
     
     return render_template('lab4/fridge-form.html')
+
+@lab4.route('/grain', methods=['GET', 'POST'])
+def grain():
+    if request.method == 'POST':
+        grain_type = request.form.get('grain_type')
+        weight = request.form.get('weight')
+        
+        # Проверка на пустые значения
+        if not grain_type:
+            return render_template('lab4/grain-result.html', 
+                                error='Ошибка: не выбран тип зерна')
+        
+        if not weight:
+            return render_template('lab4/grain-result.html', 
+                                error='Ошибка: не указан вес')
+        
+        try:
+            weight_float = float(weight)
+            
+            # Проверка на неположительный вес
+            if weight_float <= 0:
+                return render_template('lab4/grain-result.html', 
+                                    error='Ошибка: вес должен быть больше 0')
+            
+            # Проверка на слишком большой объем
+            if weight_float > 100:
+                return render_template('lab4/grain-result.html', 
+                                    error='Извините, такого объёма сейчас нет в наличии')
+            
+            # Цены за тонну
+            prices = {
+                'barley': 12000,  # ячмень
+                'oats': 8500,     # овёс
+                'wheat': 9000,    # пшеница
+                'rye': 15000      # рожь
+            }
+            
+            # Названия зерна
+            grain_names = {
+                'barley': 'ячмень',
+                'oats': 'овёс', 
+                'wheat': 'пшеница',
+                'rye': 'рожь'
+            }
+            
+            # Расчет стоимости
+            base_price = prices[grain_type]
+            total = weight_float * base_price
+            
+            # Применение скидки
+            discount = 0
+            if weight_float > 10:
+                discount = total * 0.10
+                total -= discount
+            
+            grain_name = grain_names[grain_type]
+            
+            return render_template('lab4/grain-result.html', 
+                                grain_name=grain_name,
+                                weight=weight_float,
+                                total=total,
+                                discount=discount,
+                                has_discount=weight_float > 10)
+            
+        except ValueError:
+            return render_template('lab4/grain-result.html', 
+                                error='Ошибка: введите корректный вес')
+    
+    return render_template('lab4/grain-form.html')
