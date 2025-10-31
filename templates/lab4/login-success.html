@@ -8,9 +8,17 @@
         Вы успешно авторизовались в системе
     </div>
     
-    <form action="/lab4/logout" method="post">
-        <button type="submit">Выход</button>
-    </form>
+    <div style="margin-bottom: 20px;">
+        <a href="/lab4/users" style="padding: 8px 16px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">
+            Список пользователей
+        </a>
+        
+        <form action="/lab4/logout" method="post" style="display: inline;">
+            <button type="submit" style="padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px;">
+                Выход
+            </button>
+        </form>
+    </div>
     
     <div style="margin-top: 20px;">
         <a href="/lab4/login">Назад к авторизации</a>

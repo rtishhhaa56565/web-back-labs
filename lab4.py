@@ -387,3 +387,110 @@ def grain():
                                 error='Ошибка: введите корректный вес')
     
     return render_template('lab4/grain-form.html')
+
+@lab4.route('/users')
+def users_list():
+    # Проверка авторизации
+    if 'username' not in session:
+        return redirect(url_for('lab4.login'))
+    
+    current_user = session['username']
+    users_list = []
+    
+    # Формируем список пользователей без паролей
+    for username, user_data in users.items():
+        users_list.append({
+            'username': username,
+            'name': user_data.get('name', ''),
+            'gender': user_data.get('gender', ''),
+            'is_current': username == current_user
+        })
+    
+    return render_template('lab4/users.html', users=users_list, current_user=current_user)
+
+@lab4.route('/users/delete', methods=['POST'])
+def delete_user():
+    # Проверка авторизации
+    if 'username' not in session:
+        return redirect(url_for('lab4.login'))
+    
+    username = session['username']
+    
+    # Удаляем пользователя из списка
+    if username in users:
+        del users[username]
+        session.pop('username', None)  # Разлогиниваем
+    
+    return redirect(url_for('lab4.login'))
+
+@lab4.route('/users/edit', methods=['GET', 'POST'])
+def edit_user():
+    # Проверка авторизации
+    if 'username' not in session:
+        return redirect(url_for('lab4.login'))
+    
+    username = session['username']
+    user_data = users.get(username, {})
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'cancel':
+            return redirect(url_for('lab4.users_list'))
+        
+        elif action == 'save':
+            new_username = request.form.get('username')
+            new_name = request.form.get('name')
+            new_gender = request.form.get('gender')
+            new_password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+            
+            # Валидация
+            if not new_username:
+                return render_template('lab4/edit-user.html', 
+                                    user_data=user_data,
+                                    error='Не введён логин')
+            
+            if not new_name:
+                return render_template('lab4/edit-user.html', 
+                                    user_data=user_data,
+                                    error='Не введено имя')
+            
+            # Проверка уникальности логина (если изменился)
+            if new_username != username and new_username in users:
+                return render_template('lab4/edit-user.html', 
+                                    user_data=user_data,
+                                    error='Пользователь с таким логином уже существует')
+            
+            # Проверка паролей
+            if new_password or confirm_password:
+                if new_password != confirm_password:
+                    return render_template('lab4/edit-user.html', 
+                                        user_data=user_data,
+                                        error='Пароли не совпадают')
+                if len(new_password) < 3:
+                    return render_template('lab4/edit-user.html', 
+                                        user_data=user_data,
+                                        error='Пароль должен содержать минимум 3 символа')
+            
+            # Обновление данных пользователя
+            if new_username != username:
+                # Если логин изменился, создаем новую запись и удаляем старую
+                users[new_username] = {
+                    'password': new_password if new_password else user_data['password'],
+                    'name': new_name,
+                    'gender': new_gender
+                }
+                del users[username]
+                session['username'] = new_username  # Обновляем сессию
+            else:
+                # Если логин не изменился, обновляем существующую запись
+                users[username] = {
+                    'password': new_password if new_password else user_data['password'],
+                    'name': new_name,
+                    'gender': new_gender
+                }
+            
+            return redirect(url_for('lab4.users_list'))
+    
+    return render_template('lab4/edit-user.html', user_data=user_data)
