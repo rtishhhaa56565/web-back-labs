@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block lab %}База знаний{% endblock %}
+
+{% block main %}
+    <h1>База знаний</h1>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
+                    <a href="/lab5/list" style="text-decoration: none; color: #007bff; font-weight: bold;">Список статей</a>
+                </td>
+                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
+                    <a href="/lab5/create" style="text-decoration: none; color: #007bff; font-weight: bold;">Создать статью</a>
+                </td>
+                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
+                    <a href="/lab5/login" style="text-decoration: none; color: #007bff; font-weight: bold;">Войти</a>
+                </td>
+                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
+                    <a href="/lab5/register" style="text-decoration: none; color: #007bff; font-weight: bold;">Регистрация</a>
+                </td>
+                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center; background-color: #e9ecef;">
+                    <strong>{{ username }}</strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2>Добро пожаловать в базу знаний!</h2>
+        <p>Здесь вы можете создавать, просматривать и редактировать статьи.</p>
+        <p>Для начала работы выберите один из пунктов меню выше.</p>
+    </div>
+{% endblock %}
