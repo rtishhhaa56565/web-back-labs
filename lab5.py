@@ -19,6 +19,17 @@ def get_db_connection():
         print(f"Ошибка подключения к БД: {e}")
         return None
 
+# Функция для закрытия подключения к БД с коммитом
+def close_db_connection(conn, cursor=None):
+    try:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.commit()
+            conn.close()
+    except Error as e:
+        print(f"Ошибка при закрытии подключения: {e}")
+
 # Функция для инициализации БД (создания таблицы)
 def init_db():
     conn = get_db_connection()
@@ -39,7 +50,8 @@ def init_db():
         except Error as e:
             print(f"Ошибка при создании таблицы: {e}")
         finally:
-            conn.close()
+            if conn:
+                conn.close()
 
 # Вызываем инициализацию БД при импорте
 init_db()
@@ -66,6 +78,7 @@ def register():
             error = "Ошибка подключения к базе данных"
             return render_template('lab5/register.html', error=error)
         
+        cursor = None
         try:
             cursor = conn.cursor()
             
@@ -75,8 +88,6 @@ def register():
             
             if existing_user:
                 error = "Пользователь с таким логином уже существует"
-                cursor.close()
-                conn.close()
                 return render_template('lab5/register.html', error=error)
             
             # Если пользователя нет - сохраняем в БД
@@ -84,20 +95,17 @@ def register():
                 "INSERT INTO users (login, password) VALUES (%s, %s);",
                 (login, password)
             )
-            conn.commit()
-            cursor.close()
-            conn.close()
             
             print(f"Успешная регистрация: {login}")
             return redirect(url_for('lab5.success'))
             
         except Error as e:
-            conn.rollback()
+            if conn:
+                conn.rollback()
             error = f"Ошибка при работе с БД: {e}"
             return render_template('lab5/register.html', error=error)
         finally:
-            if conn:
-                conn.close()
+            close_db_connection(conn, cursor)
     
     return render_template('lab5/register.html')
 
@@ -122,6 +130,7 @@ def login():
             error = "Ошибка подключения к базе данных"
             return render_template('lab5/login.html', error=error)
         
+        cursor = None
         try:
             # Используем RealDictCursor для работы с именами столбцов
             cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -136,24 +145,19 @@ def login():
                 if user['password'] == password:
                     # Сохраняем логин в сессии
                     session['username'] = login
-                    cursor.close()
-                    conn.close()
                     return redirect(url_for('lab5.success_login'))
                 else:
                     error = "Неверный пароль"
             else:
                 error = "Пользователь с таким логином не найден"
-                
-            cursor.close()
-            conn.close()
+            
             return render_template('lab5/login.html', error=error)
                 
         except Error as e:
             error = f"Ошибка при работе с БД: {e}"
             return render_template('lab5/login.html', error=error)
         finally:
-            if conn:
-                conn.close()
+            close_db_connection(conn, cursor)
     
     return render_template('lab5/login.html')
 
@@ -176,17 +180,15 @@ def show_users():
     if conn is None:
         return "Ошибка подключения к БД"
     
+    cursor = None
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT id, login, created_at FROM users ORDER BY created_at DESC;")
         users = cursor.fetchall()
-        cursor.close()
-        conn.close()
         
         return render_template('lab5/users.html', users=users)
         
     except Error as e:
         return f"Ошибка при получении пользователей: {e}"
     finally:
-        if conn:
-            conn.close()
+        close_db_connection(conn, cursor)
