@@ -244,6 +244,43 @@ def create_article():
     
     return render_template('lab5/create_article.html', username=username)
 
+# Просмотр статей пользователя
+@lab5.route('/list')
+def list_articles():
+    # Проверяем аутентификацию пользователя
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('lab5.login'))
+    
+    conn = get_db_connection()
+    if conn is None:
+        return "Ошибка подключения к БД"
+    
+    cursor = None
+    try:
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Находим ID пользователя
+        cursor.execute("SELECT id FROM users WHERE login = %s;", (username,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return "Пользователь не найден"
+        
+        # Находим все статьи пользователя
+        cursor.execute(
+            "SELECT * FROM articles WHERE user_id = %s ORDER BY created_at DESC;",
+            (user['id'],)
+        )
+        articles = cursor.fetchall()
+        
+        return render_template('lab5/articles.html', articles=articles, username=username)
+        
+    except Error as e:
+        return f"Ошибка при получении статей: {e}"
+    finally:
+        close_db_connection(conn, cursor)
+
 # Страница со списком всех пользователей (для админа)
 @lab5.route('/users')
 def show_users():
