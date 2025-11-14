@@ -98,7 +98,7 @@ def register():
         try:
             cursor = conn.cursor()
             
-            # Проверяем, существует ли пользователь
+            # Проверяем, существует ли пользователь - ЗАЩИЩЕННЫЙ ЗАПРОС
             cursor.execute("SELECT * FROM users WHERE login = %s;", (login,))
             existing_user = cursor.fetchone()
             
@@ -109,7 +109,7 @@ def register():
             # Генерируем хеш пароля вместо сохранения в открытом виде
             password_hash = generate_password_hash(password)
             
-            # Сохраняем хеш пароля в БД
+            # Сохраняем хеш пароля в БД - ЗАЩИЩЕННЫЙ ЗАПРОС
             cursor.execute(
                 "INSERT INTO users (login, password) VALUES (%s, %s);",
                 (login, password_hash)
@@ -153,6 +153,8 @@ def login():
         try:
             # Используем RealDictCursor для работы с именами столбцов
             cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            # ЗАЩИЩЕННЫЙ ЗАПРОС - параметры передаются отдельно
             cursor.execute(
                 "SELECT * FROM users WHERE login = %s;",
                 (login,)
@@ -218,7 +220,7 @@ def create_article():
         try:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
-            # Находим ID пользователя
+            # Находим ID пользователя - ЗАЩИЩЕННЫЙ ЗАПРОС
             cursor.execute("SELECT id FROM users WHERE login = %s;", (username,))
             user = cursor.fetchone()
             
@@ -226,7 +228,7 @@ def create_article():
                 error = "Пользователь не найден"
                 return render_template('lab5/create_articles.html', error=error, username=username)
             
-            # Вставляем статью в базу данных
+            # Вставляем статью в базу данных - ЗАЩИЩЕННЫЙ ЗАПРОС
             cursor.execute(
                 "INSERT INTO articles (title, article_text, user_id) VALUES (%s, %s, %s);",
                 (title, article_text, user['id'])
@@ -260,14 +262,14 @@ def list_articles():
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Находим ID пользователя
+        # Находим ID пользователя - ЗАЩИЩЕННЫЙ ЗАПРОС
         cursor.execute("SELECT id FROM users WHERE login = %s;", (username,))
         user = cursor.fetchone()
         
         if not user:
             return "Пользователь не найден"
         
-        # Находим все статьи пользователя
+        # Находим все статьи пользователя - ЗАЩИЩЕННЫЙ ЗАПРОС
         cursor.execute(
             "SELECT * FROM articles WHERE user_id = %s ORDER BY created_at DESC;",
             (user['id'],)
@@ -309,7 +311,7 @@ def test_articles():
         conn = get_db_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Просто получаем все статьи
+        # Просто получаем все статьи - ЗАЩИЩЕННЫЙ ЗАПРОС
         cursor.execute("SELECT * FROM articles LIMIT 5;")
         articles = cursor.fetchall()
         
@@ -323,20 +325,3 @@ def test_articles():
         
     except Exception as e:
         return f"Ошибка теста: {str(e)}"
-
-# Отладочный маршрут для проверки endpoints
-@lab5.route('/debug_endpoints')
-def debug_endpoints():
-    endpoints = []
-    for rule in lab5.url_map.iter_rules():
-        endpoints.append({
-            'endpoint': rule.endpoint,
-            'methods': list(rule.methods),
-            'path': rule.rule
-        })
-    
-    result = "<h1>Доступные endpoints lab5:</h1>"
-    for ep in endpoints:
-        result += f"<p><strong>{ep['endpoint']}</strong>: {ep['path']} [{', '.join(ep['methods'])}]</p>"
-    
-    return result
