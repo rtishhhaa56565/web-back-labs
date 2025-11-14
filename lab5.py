@@ -31,12 +31,14 @@ def close_db_connection(conn, cursor=None):
     except Error as e:
         print(f"Ошибка при закрытии подключения: {e}")
 
-# Функция для инициализации БД (создания таблицы)
+# Функция для инициализации БД (создания таблиц)
 def init_db():
     conn = get_db_connection()
     if conn:
         try:
             cursor = conn.cursor()
+            
+            # Создаём таблицу пользователей если её нет
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
@@ -45,11 +47,24 @@ def init_db():
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
+            
+            # Создаём таблицу статей если её нет
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS articles (
+                    id SERIAL PRIMARY KEY,
+                    title VARCHAR(200) NOT NULL,
+                    article_text TEXT NOT NULL,
+                    user_id INTEGER REFERENCES users(id),
+                    is_public BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            
             conn.commit()
             cursor.close()
-            print("Таблица users создана или уже существует")
+            print("Таблицы users и articles созданы или уже существуют")
         except Error as e:
-            print(f"Ошибка при создании таблицы: {e}")
+            print(f"Ошибка при создании таблиц: {e}")
         finally:
             if conn:
                 conn.close()
@@ -176,6 +191,58 @@ def success_login():
 def logout():
     session.pop('username', None)
     return redirect(url_for('lab5.main'))
+
+# Создание статьи
+@lab5.route('/create', methods=['GET', 'POST'])
+def create_article():
+    # Проверяем аутентификацию пользователя
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('lab5.login'))
+    
+    if request.method == 'POST':
+        title = request.form.get('title')
+        article_text = request.form.get('article_text')
+        
+        # Проверка на пустые поля
+        if not title or not article_text:
+            error = "Название и текст статьи не могут быть пустыми"
+            return render_template('lab5/create_article.html', error=error, username=username)
+        
+        conn = get_db_connection()
+        if conn is None:
+            error = "Ошибка подключения к базе данных"
+            return render_template('lab5/create_article.html', error=error, username=username)
+        
+        cursor = None
+        try:
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            
+            # Находим ID пользователя
+            cursor.execute("SELECT id FROM users WHERE login = %s;", (username,))
+            user = cursor.fetchone()
+            
+            if not user:
+                error = "Пользователь не найден"
+                return render_template('lab5/create_article.html', error=error, username=username)
+            
+            # Вставляем статью в базу данных
+            cursor.execute(
+                "INSERT INTO articles (title, article_text, user_id) VALUES (%s, %s, %s);",
+                (title, article_text, user['id'])
+            )
+            
+            return redirect(url_for('lab5.main'))
+            
+        except Error as e:
+            if conn:
+                conn.rollback()
+            error = f"Ошибка при работе с БД: {e}"
+            return render_template('lab5/create_article.html', error=error, username=username)
+        finally:
+            close_db_connection(conn, cursor)
+    
+    return render_template('lab5/create_article.html', username=username)
 
 # Страница со списком всех пользователей (для админа)
 @lab5.route('/users')
