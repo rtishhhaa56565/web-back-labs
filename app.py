@@ -7,7 +7,13 @@ from lab4 import lab4
 from lab5 import lab5
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here_12345' 
+# Чтение секретного ключа из переменной окружения SECRET_KEY
+# Если переменной нет, используется значение по умолчанию
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
+
+# Чтение типа базы данных из переменной окружения DB_TYPE
+# Если переменной нет, используется значение по умолчанию 'postgres'
+app.config['DB_TYPE'] = os.environ.get('DB_TYPE', 'postgres')
 
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')

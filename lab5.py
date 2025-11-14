@@ -3,22 +3,31 @@ import psycopg2
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
 from werkzeug.security import generate_password_hash, check_password_hash
+import sqlite3
+from os import path
 
 lab5 = Blueprint('lab5', __name__)
 
 # Функция для подключения к БД
-def get_db_connection():
-    try:
+def db_connect():
+    if current_app.config['DB_TYPE'] == 'postgres':
         conn = psycopg2.connect(
             host="localhost",           
             database="web_lab5",     
             user="arina_arysheva_knowledge_base",            
             password="secure_password_123"    
-        )
-        return conn
-    except Error as e:
-        print(f"Ошибка подключения к БД: {e}")
-        return None
+         )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+    else:
+        # Подключение к SQLite
+        dir_path = Path(__file__).parent
+        db_path = dir_path / "database.db"
+        conn = sqlite3.connect(db_path)
+        # Установка фабрики строк для доступа по ключу
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    
+    return conn, cur
 
 # Функция для закрытия подключения к БД с коммитом
 def close_db_connection(conn, cursor=None):
