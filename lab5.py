@@ -207,12 +207,12 @@ def create_article():
         # Проверка на пустые поля
         if not title or not article_text:
             error = "Название и текст статьи не могут быть пустыми"
-            return render_template('lab5/create_article.html', error=error, username=username)
+            return render_template('lab5/create_articles.html', error=error, username=username)
         
         conn = get_db_connection()
         if conn is None:
             error = "Ошибка подключения к базе данных"
-            return render_template('lab5/create_article.html', error=error, username=username)
+            return render_template('lab5/create_articles.html', error=error, username=username)
         
         cursor = None
         try:
@@ -224,7 +224,7 @@ def create_article():
             
             if not user:
                 error = "Пользователь не найден"
-                return render_template('lab5/create_article.html', error=error, username=username)
+                return render_template('lab5/create_articles.html', error=error, username=username)
             
             # Вставляем статью в базу данных
             cursor.execute(
@@ -238,11 +238,11 @@ def create_article():
             if conn:
                 conn.rollback()
             error = f"Ошибка при работе с БД: {e}"
-            return render_template('lab5/create_article.html', error=error, username=username)
+            return render_template('lab5/create_articles.html', error=error, username=username)
         finally:
             close_db_connection(conn, cursor)
     
-    return render_template('lab5/create_article.html', username=username)
+    return render_template('lab5/create_articles.html', username=username)
 
 # Просмотр статей пользователя
 @lab5.route('/list')
@@ -300,3 +300,43 @@ def show_users():
         return f"Ошибка при получении пользователей: {e}"
     finally:
         close_db_connection(conn, cursor)
+
+# Тестовый маршрут для отладки
+@lab5.route('/test_articles')
+def test_articles():
+    """Временный маршрут для тестирования"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Просто получаем все статьи
+        cursor.execute("SELECT * FROM articles LIMIT 5;")
+        articles = cursor.fetchall()
+        
+        result = "<h1>Тест статей</h1>"
+        for article in articles:
+            result += f"<p>{article['id']}: {article['title']}</p>"
+        
+        cursor.close()
+        conn.close()
+        return result
+        
+    except Exception as e:
+        return f"Ошибка теста: {str(e)}"
+
+# Отладочный маршрут для проверки endpoints
+@lab5.route('/debug_endpoints')
+def debug_endpoints():
+    endpoints = []
+    for rule in lab5.url_map.iter_rules():
+        endpoints.append({
+            'endpoint': rule.endpoint,
+            'methods': list(rule.methods),
+            'path': rule.rule
+        })
+    
+    result = "<h1>Доступные endpoints lab5:</h1>"
+    for ep in endpoints:
+        result += f"<p><strong>{ep['endpoint']}</strong>: {ep['path']} [{', '.join(ep['methods'])}]</p>"
+    
+    return result

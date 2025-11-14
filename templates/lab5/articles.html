@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block lab %}Мои статьи{% endblock %}
+
+{% block main %}
+    <h1>Мои статьи</h1>
+
+    <div style="margin-bottom: 25px; display: flex; gap: 10px; align-items: center;">
+        <a href="/lab5/create" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            ✏️ Создать новую статью
+        </a>
+        <span style="color: #666; font-size: 14px;">
+            Всего статей: {{ articles|length }}
+        </span>
+    </div>
+
+    {% if articles %}
+        <div class="articles-list">
+            {% for article in articles %}
+                <div style="border: 1px solid #e0e0e0; padding: 25px; margin-bottom: 25px; border-radius: 8px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h2 style="margin-top: 0; margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                        {{ article.title }}
+                    </h2>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p style="white-space: pre-wrap; line-height: 1.6; font-size: 16px; color: #34495e; margin: 0;">
+                            {{ article.article_text }}
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #ecf0f1; font-size: 14px; color: #7f8c8d;">
+                        <div>
+                            <strong>Создано:</strong> 
+                            {% if article.created_at %}
+                                {{ article.created_at.strftime('%d.%m.%Y в %H:%M') }}
+                            {% else %}
+                                Дата не указана
+                            {% endif %}
+                        </div>
+                        <div style="color: #95a5a6;">
+                            ID: {{ article.id }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; background-color: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+            <div style="font-size: 48px; margin-bottom: 20px; color: #bdc3c7;">📝</div>
+            <h3 style="color: #7f8c8d; margin-bottom: 15px;">У вас пока нет статей</h3>
+            <p style="color: #95a5a6; margin-bottom: 25px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                Начните делиться своими знаниями! Создайте первую статью и она появится здесь.
+            </p>
+            <a href="/lab5/create" style="padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+                Создать первую статью
+            </a>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="/lab5" style="padding: 8px 16px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;">
+            ← Вернуться на главную
+        </a>
+    </div>
+{% endblock %}
