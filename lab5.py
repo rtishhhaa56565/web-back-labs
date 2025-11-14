@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 import psycopg2
 from psycopg2 import Error
+from psycopg2.extras import RealDictCursor
 
 lab5 = Blueprint('lab5', __name__)
 
@@ -45,7 +46,8 @@ init_db()
 
 @lab5.route('/')
 def main():
-    return render_template('lab5/lab5.html', username="anonymous")
+    username = session.get('username', 'anonymous')
+    return render_template('lab5/lab5.html', username=username)
 
 @lab5.route('/register', methods=['GET', 'POST'])
 def register():
@@ -99,12 +101,10 @@ def register():
     
     return render_template('lab5/register.html')
 
-# Новая страница для успешной регистрации
+# Страница успешной регистрации
 @lab5.route('/success')
 def success():
     return render_template('lab5/success.html')
-
-# Дополнительные маршруты:
 
 # Страница входа
 @lab5.route('/login', methods=['GET', 'POST'])
@@ -123,20 +123,30 @@ def login():
             return render_template('lab5/login.html', error=error)
         
         try:
-            cursor = conn.cursor()
+            # Используем RealDictCursor для работы с именами столбцов
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             cursor.execute(
-                "SELECT * FROM users WHERE login = %s AND password = %s;",
-                (login, password)
+                "SELECT * FROM users WHERE login = %s;",
+                (login,)
             )
             user = cursor.fetchone()
-            cursor.close()
-            conn.close()
             
             if user:
-                return redirect(url_for('lab5.main'))
+                # Проверяем пароль по имени столбца
+                if user['password'] == password:
+                    # Сохраняем логин в сессии
+                    session['username'] = login
+                    cursor.close()
+                    conn.close()
+                    return redirect(url_for('lab5.success_login'))
+                else:
+                    error = "Неверный пароль"
             else:
-                error = "Неверный логин или пароль"
-                return render_template('lab5/login.html', error=error)
+                error = "Пользователь с таким логином не найден"
+                
+            cursor.close()
+            conn.close()
+            return render_template('lab5/login.html', error=error)
                 
         except Error as e:
             error = f"Ошибка при работе с БД: {e}"
@@ -146,6 +156,18 @@ def login():
                 conn.close()
     
     return render_template('lab5/login.html')
+
+# Страница успешного входа
+@lab5.route('/success_login')
+def success_login():
+    username = session.get('username', 'anonymous')
+    return render_template('lab5/success_login.html', username=username)
+
+# Выход из системы
+@lab5.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('lab5.main'))
 
 # Страница со списком всех пользователей (для админа)
 @lab5.route('/users')
