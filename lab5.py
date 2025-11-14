@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 import psycopg2
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
+from werkzeug.security import generate_password_hash, check_password_hash
 
 lab5 = Blueprint('lab5', __name__)
 
@@ -40,7 +41,7 @@ def init_db():
                 CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
                     login VARCHAR(50) UNIQUE NOT NULL,
-                    password VARCHAR(50) NOT NULL,
+                    password VARCHAR(200) NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
@@ -90,10 +91,13 @@ def register():
                 error = "Пользователь с таким логином уже существует"
                 return render_template('lab5/register.html', error=error)
             
-            # Если пользователя нет - сохраняем в БД
+            # Генерируем хеш пароля вместо сохранения в открытом виде
+            password_hash = generate_password_hash(password)
+            
+            # Сохраняем хеш пароля в БД
             cursor.execute(
                 "INSERT INTO users (login, password) VALUES (%s, %s);",
-                (login, password)
+                (login, password_hash)
             )
             
             print(f"Успешная регистрация: {login}")
@@ -141,8 +145,8 @@ def login():
             user = cursor.fetchone()
             
             if user:
-                # Проверяем пароль по имени столбца
-                if user['password'] == password:
+                # Проверяем пароль с помощью check_password_hash
+                if check_password_hash(user['password'], password):
                     # Сохраняем логин в сессии
                     session['username'] = login
                     return redirect(url_for('lab5.success_login'))
