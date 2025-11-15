@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Вход в систему</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Вход в систему</h1>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    
+    <form method="POST">
+        <div>
+            <label>Логин:</label>
+            <input type="text" name="login" required>
+        </div>
+        <div>
+            <label>Пароль:</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">Войти</button>
+    </form>
+    
+    <br>
+    <a href="{{ url_for('lab5.register') }}">Регистрация</a>
+    <br>
+    <a href="{{ url_for('lab5.main') }}">На главную</a>
+</body>
+</html>

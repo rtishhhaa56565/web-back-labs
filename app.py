@@ -4,10 +4,20 @@ from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
+<<<<<<< HEAD
 from lab5 import lab5 
+=======
+from lab5 import lab5
+>>>>>>> 6f8c0b9359edc2b7614d9f9e01239e27d4392c55
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here_12345' 
+# Чтение секретного ключа из переменной окружения SECRET_KEY
+# Если переменной нет, используется значение по умолчанию
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
+
+# Чтение типа базы данных из переменной окружения DB_TYPE
+# Если переменной нет, используется значение по умолчанию 'postgres'
+app.config['DB_TYPE'] = os.environ.get('DB_TYPE', 'postgres')
 
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
@@ -41,6 +51,7 @@ def index():
                     <li><a href="/lab2/">Вторая лабораторная</a></li>
                     <li><a href="/lab3/">Третья лабораторная</a></li>
                     <li><a href="/lab4/">Четвертая лабораторная</a></li>
+                    <li><a href="/lab5/">Пятая лабораторная</a></li>
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>

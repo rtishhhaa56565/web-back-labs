@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список пользователей</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Зарегистрированные пользователи</h1>
+    
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Логин</th>
+            <th>Дата регистрации</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br>
+    <a href="{{ url_for('lab5.main') }}">На главную</a>
+    <a href="{{ url_for('lab5.register') }}">Регистрация</a>
+</body>
+</html>
