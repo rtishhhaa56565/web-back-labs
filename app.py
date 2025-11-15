@@ -4,6 +4,7 @@ from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
+from lab5 import lab5 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here_12345' 
@@ -12,6 +13,7 @@ app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
 app.register_blueprint(lab3, url_prefix='/lab3')
 app.register_blueprint(lab4, url_prefix='/lab4')
+app.register_blueprint(lab5, url_prefix='/lab5')
 
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
