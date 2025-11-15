@@ -4,7 +4,11 @@ from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
+<<<<<<< HEAD
+from lab5 import lab5 
+=======
 from lab5 import lab5
+>>>>>>> 6f8c0b9359edc2b7614d9f9e01239e27d4392c55
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here_12345' 
