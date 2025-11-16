@@ -1,11 +1,404 @@
 {% extends "base.html" %}
 
+{% block title %}Лабораторная работа 6{% endblock %}
+
 {% block lab %}Лабораторная работа 6{% endblock %}
 
 {% block main %}
-    <h1>Лабораторная работа 6</h1>
-    <p>Сервис базы знаний</p>
-    <div>
-        <a href="/lab6/articles" class="btn btn-primary">Перейти к статьям</a>
+<div class="container">
+    <h1>Система аренды офисов</h1>
+    
+    <!-- Секция авторизации -->
+    <div class="auth-section">
+        <h3>Авторизация</h3>
+        <div id="auth-form">
+            <input type="text" id="login-input" placeholder="Введите логин">
+            <button class="login-btn" onclick="login()">Войти</button>
+        </div>
+        <div id="user-info" style="display: none;">
+            <div class="user-info">
+                Вы вошли как: <span id="current-user"></span>
+                <button class="logout-btn" onclick="logout()">Выйти</button>
+            </div>
+            <div id="my-bookings"></div>
+        </div>
     </div>
+
+    <!-- Секция офисов -->
+    <div class="offices-section">
+        <h3>Доступные офисы</h3>
+        <div id="offices-list">
+            <!-- Офисы будут загружены через JavaScript -->
+        </div>
+    </div>
+
+    <!-- Сообщения -->
+    <div id="message"></div>
+</div>
+
+<style>
+    .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .auth-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #e8f4fd;
+        border-radius: 5px;
+    }
+    .offices-section {
+        margin-top: 20px;
+    }
+    .office {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    .office.occupied {
+        background: #ffe6e6;
+    }
+    .office.available {
+        background: #e6ffe6;
+    }
+    .office.my-booking {
+        background: #fff3cd;
+        border-color: #ffc107;
+    }
+    button {
+        padding: 8px 16px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .book-btn {
+        background: #28a745;
+        color: white;
+    }
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+    }
+    .login-btn {
+        background: #007bff;
+        color: white;
+    }
+    .logout-btn {
+        background: #6c757d;
+        color: white;
+    }
+    button:hover {
+        opacity: 0.8;
+    }
+    .user-info {
+        background: #d4edda;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    .error {
+        color: #dc3545;
+        background: #f8d7da;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    .success {
+        color: #155724;
+        background: #d4edda;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentUser = null;
+    let userBookings = [];
+
+    // Функция загрузки списка офисов
+    function loadOffices() {
+        const url = '/lab6/offices/';
+        
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const offices = data.offices;
+            const officesList = document.getElementById('offices-list');
+            
+            // Очищаем список перед добавлением новых элементов
+            officesList.innerHTML = '';
+            
+            // Создаем элементы для каждого офиса
+            offices.forEach(office => {
+                const isMyBooking = userBookings.includes(office.number);
+                const isOccupied = office.user !== null && !isMyBooking;
+                
+                // Создаем элемент div для офиса
+                const officeElement = document.createElement('div');
+                
+                // Добавляем классы в зависимости от статуса
+                if (isMyBooking) {
+                    officeElement.className = 'office my-booking';
+                } else if (isOccupied) {
+                    officeElement.className = 'office occupied';
+                } else {
+                    officeElement.className = 'office available';
+                }
+                
+                // Создаем заголовок
+                const title = document.createElement('h4');
+                title.textContent = `Офис №${office.number}`;
+                
+                // Создаем параграф со статусом
+                const status = document.createElement('p');
+                let statusText = 'Свободен';
+                if (isMyBooking) {
+                    statusText = 'Арендован вами';
+                } else if (isOccupied) {
+                    statusText = 'Занят';
+                }
+                status.textContent = `Статус: ${statusText}`;
+                
+                // Добавляем заголовок и статус в элемент офиса
+                officeElement.appendChild(title);
+                officeElement.appendChild(status);
+                
+                // Создаем кнопки в зависимости от статуса
+                if (!isOccupied && !isMyBooking) {
+                    const bookButton = document.createElement('button');
+                    bookButton.className = 'book-btn';
+                    bookButton.textContent = 'Арендовать';
+                    bookButton.onclick = function() {
+                        bookOffice(office.number);
+                    };
+                    officeElement.appendChild(bookButton);
+                }
+                
+                if (isMyBooking) {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.className = 'cancel-btn';
+                    cancelButton.textContent = 'Освободить';
+                    cancelButton.onclick = function() {
+                        cancelBooking(office.number);
+                    };
+                    officeElement.appendChild(cancelButton);
+                }
+                
+                // Добавляем элемент офиса в список
+                officesList.appendChild(officeElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('Ошибка загрузки офисов', 'error');
+        });
+    }
+
+    // Функция входа
+    function login() {
+        const loginInput = document.getElementById('login-input');
+        const login = loginInput.value.trim();
+        
+        if (!login) {
+            showMessage('Введите логин', 'error');
+            return;
+        }
+
+        fetch('/lab6/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({login: login})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                currentUser = login;
+                updateUI();
+                loadUserInfo();
+                loadOffices();
+                showMessage(data.message, 'success');
+            } else {
+                showMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('Ошибка входа', 'error');
+        });
+    }
+
+    // Функция выхода
+    function logout() {
+        fetch('/lab6/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            currentUser = null;
+            userBookings = [];
+            updateUI();
+            showMessage(data.message, 'success');
+        });
+    }
+
+    // Функция загрузки информации о пользователе
+    function loadUserInfo() {
+        const jsonData = {
+            "jsonrpc": "2.0",
+            "method": "info",
+            "params": null,
+            "id": Math.floor(Math.random() * 1000)
+        };
+
+        fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showMessage('Ошибка: ' + data.error.message, 'error');
+            } else {
+                userBookings = data.result.offices || [];
+                displayUserBookings();
+            }
+        });
+    }
+
+    // Функция отображения арендованных офисов пользователя
+    function displayUserBookings() {
+        const myBookingsDiv = document.getElementById('my-bookings');
+        if (userBookings.length > 0) {
+            myBookingsDiv.innerHTML = '<h4>Мои арендованные офисы:</h4>' + 
+                userBookings.map(officeNum => 
+                    `<div>Офис №${officeNum} 
+                     <button class="cancel-btn" onclick="cancelBooking(${officeNum})">Освободить</button>
+                     </div>`
+                ).join('');
+        } else {
+            myBookingsDiv.innerHTML = '<p>У вас нет арендованных офисов</p>';
+        }
+    }
+
+    // Функция аренды офиса
+    function bookOffice(officeNumber) {
+        const jsonData = {
+            "jsonrpc": "2.0",
+            "method": "booking",
+            "params": officeNumber,
+            "id": Math.floor(Math.random() * 1000)
+        };
+
+        fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showMessage('Ошибка: ' + data.error.message, 'error');
+            } else {
+                showMessage(data.result, 'success');
+                loadUserInfo();
+                loadOffices();
+            }
+        });
+    }
+
+    // Функция снятия аренды
+    function cancelBooking(officeNumber) {
+        if (!confirm(`Вы уверены, что хотите освободить офис №${officeNumber}?`)) {
+            return;
+        }
+
+        const jsonData = {
+            "jsonrpc": "2.0",
+            "method": "cancellation",
+            "params": officeNumber,
+            "id": Math.floor(Math.random() * 1000)
+        };
+
+        fetch('/lab6/json-rpc-api/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showMessage('Ошибка: ' + data.error.message, 'error');
+            } else {
+                showMessage(data.result, 'success');
+                loadUserInfo();
+                loadOffices();
+            }
+        });
+    }
+
+    // Функция обновления интерфейса
+    function updateUI() {
+        const authForm = document.getElementById('auth-form');
+        const userInfo = document.getElementById('user-info');
+        const currentUserSpan = document.getElementById('current-user');
+
+        if (currentUser) {
+            authForm.style.display = 'none';
+            userInfo.style.display = 'block';
+            currentUserSpan.textContent = currentUser;
+        } else {
+            authForm.style.display = 'block';
+            userInfo.style.display = 'none';
+            document.getElementById('offices-list').innerHTML = '';
+            document.getElementById('my-bookings').innerHTML = '';
+        }
+    }
+
+    // Функция показа сообщений
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 5000);
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Загружаем список офисов при загрузке страницы
+        loadOffices();
+        
+        // Проверяем авторизацию при загрузке
+        fetch('/lab6/check-auth/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.authenticated) {
+                currentUser = data.login;
+                updateUI();
+                loadUserInfo();
+                loadOffices();
+            }
+        });
+    });
+</script>
 {% endblock %}

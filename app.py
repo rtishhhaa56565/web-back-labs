@@ -1,23 +1,29 @@
 from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
+import os
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
-<<<<<<< HEAD
 from lab5 import lab5 
-=======
-from lab5 import lab5
->>>>>>> 6f8c0b9359edc2b7614d9f9e01239e27d4392c55
-
+from lab6 import lab6  
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here_12345' 
+
+# Чтение секретного ключа из переменной окружения SECRET_KEY
+# Если переменной нет, используется значение по умолчанию
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
+
+# Чтение типа базы данных из переменной окружения DB_TYPE
+# Если переменной нет, используется значение по умолчанию 'postgres'
+app.config['DB_TYPE'] = os.environ.get('DB_TYPE', 'postgres')
 
 app.register_blueprint(lab1, url_prefix='/lab1')
 app.register_blueprint(lab2, url_prefix='/lab2')
 app.register_blueprint(lab3, url_prefix='/lab3')
 app.register_blueprint(lab4, url_prefix='/lab4')
 app.register_blueprint(lab5, url_prefix='/lab5')
+app.register_blueprint(lab6, url_prefix='/lab6')  
 
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
@@ -45,7 +51,8 @@ def index():
                     <li><a href="/lab2/">Вторая лабораторная</a></li>
                     <li><a href="/lab3/">Третья лабораторная</a></li>
                     <li><a href="/lab4/">Четвертая лабораторная</a></li>
-                    <li><a href="/lab4/">Пятая лабораторная</a></li>
+                    <li><a href="/lab5/">Пятая лабораторная</a></li>
+                    <li><a href="/lab6/">Шестая лабораторная</a></li>
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>
@@ -144,7 +151,7 @@ def page_not_found(error):
     client_ip = request.remote_addr
     access_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     requested_url = request.url
-    
+
     # Добавляем запись в лог
     log_entry = {
         'ip': client_ip,
@@ -152,12 +159,12 @@ def page_not_found(error):
         'url': requested_url
     }
     error_404_log.append(log_entry)
-    
+
     # Формируем HTML страницы
     log_html = ""
     for entry in reversed(error_404_log[-10:]):  # Показываем последние 10 записей
         log_html += f"<tr><td>{entry['ip']}</td><td>{entry['date']}</td><td>{entry['url']}</td></tr>"
-    
+
     return f"""
     <!DOCTYPE html>
     <html>
