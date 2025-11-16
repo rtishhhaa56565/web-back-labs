@@ -1,17 +1,23 @@
 from flask import Blueprint, render_template, request, session, jsonify
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 lab6 = Blueprint('lab6', __name__)
 
-# Генерируем список офисов с разной стоимостью
-offices = []
-for i in range(1, 11):
-    # Стоимость рассчитываем по формуле: базовая цена + номер офиса * 1000
-    price = 5000 + i * 1000
-    offices.append({
-        'number': i,
-        'user': None,  # арендатор
-        'price': price  # стоимость аренды
-    })
+# Функция для подключения к PostgreSQL
+def get_db_connection():
+    try:
+        conn = psycopg2.connect(
+            host="localhost",
+            database="web_lab5",  # или ваша база данных
+            user="arina_arysheva_knowledge_base",
+            password="secure_password_123",
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    except Exception as e:
+        print(f"Ошибка подключения к БД: {e}")
+        return None
 
 @lab6.route('/')
 def main():
@@ -35,27 +41,59 @@ def api():
                 'id': id
             }
         
-        # Находим офисы, арендованные текущим пользователем
-        user_offices = [office for office in offices if office['user'] == login]
-        user_offices_info = []
-        total_cost = 0
+        conn = get_db_connection()
+        if not conn:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': 'Ошибка подключения к БД'
+                },
+                'id': id
+            }
         
-        for office in user_offices:
-            user_offices_info.append({
-                'number': office['number'],
-                'price': office['price']
-            })
-            total_cost += office['price']
-        
-        return {
-            'jsonrpc': '2.0',
-            'result': {
-                'login': login,
-                'offices': user_offices_info,
-                'total_cost': total_cost
-            },
-            'id': id
-        }
+        try:
+            cursor = conn.cursor()
+            
+            # Находим офисы, арендованные текущим пользователем
+            cursor.execute(
+                "SELECT number, price FROM offices WHERE user_login = %s",
+                (login,)
+            )
+            user_offices = cursor.fetchall()
+            
+            user_offices_info = []
+            total_cost = 0
+            
+            for office in user_offices:
+                user_offices_info.append({
+                    'number': office['number'],
+                    'price': office['price']
+                })
+                total_cost += office['price']
+            
+            return {
+                'jsonrpc': '2.0',
+                'result': {
+                    'login': login,
+                    'offices': user_offices_info,
+                    'total_cost': total_cost
+                },
+                'id': id
+            }
+            
+        except Exception as e:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': f'Ошибка БД: {str(e)}'
+                },
+                'id': id
+            }
+        finally:
+            cursor.close()
+            conn.close()
         
     elif data['method'] == 'booking':
         # Бронирование офиса
@@ -72,33 +110,73 @@ def api():
         
         office_number = data['params']
         
-        # Ищем офис
-        for office in offices:
-            if office['number'] == office_number:
-                if office['user']:
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': -32600,
-                            'message': 'Офис уже арендован'
-                        },
-                        'id': id
-                    }
-                office['user'] = login
+        conn = get_db_connection()
+        if not conn:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': 'Ошибка подключения к БД'
+                },
+                'id': id
+            }
+        
+        try:
+            cursor = conn.cursor()
+            
+            # Проверяем, свободен ли офис
+            cursor.execute(
+                "SELECT user_login, price FROM offices WHERE number = %s",
+                (office_number,)
+            )
+            office = cursor.fetchone()
+            
+            if not office:
                 return {
                     'jsonrpc': '2.0',
-                    'result': f'Офис №{office_number} успешно арендован за {office["price"]} руб./мес.',
+                    'error': {
+                        'code': -32602,
+                        'message': 'Офис не найден'
+                    },
                     'id': id
                 }
-        
-        return {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32602,
-                'message': 'Офис не найден'
-            },
-            'id': id
-        }
+            
+            if office['user_login']:
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': -32600,
+                        'message': 'Офис уже арендован'
+                    },
+                    'id': id
+                }
+            
+            # Арендуем офис
+            cursor.execute(
+                "UPDATE offices SET user_login = %s WHERE number = %s",
+                (login, office_number)
+            )
+            conn.commit()
+            
+            return {
+                'jsonrpc': '2.0',
+                'result': f'Офис №{office_number} успешно арендован за {office["price"]} руб./мес.',
+                'id': id
+            }
+            
+        except Exception as e:
+            conn.rollback()
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': f'Ошибка БД: {str(e)}'
+                },
+                'id': id
+            }
+        finally:
+            cursor.close()
+            conn.close()
         
     elif data['method'] == 'cancellation':
         # Снятие брони офиса
@@ -115,44 +193,83 @@ def api():
         
         office_number = data['params']
         
-        # Ищем офис
-        for office in offices:
-            if office['number'] == office_number:
-                if not office['user']:
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': -32600,
-                            'message': 'Офис не арендован'
-                        },
-                        'id': id
-                    }
-                
-                if office['user'] != login:
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': -32600,
-                            'message': 'Нельзя снять чужую аренду'
-                        },
-                        'id': id
-                    }
-                
-                office['user'] = None
+        conn = get_db_connection()
+        if not conn:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': 'Ошибка подключения к БД'
+                },
+                'id': id
+            }
+        
+        try:
+            cursor = conn.cursor()
+            
+            # Проверяем офис
+            cursor.execute(
+                "SELECT user_login FROM offices WHERE number = %s",
+                (office_number,)
+            )
+            office = cursor.fetchone()
+            
+            if not office:
                 return {
                     'jsonrpc': '2.0',
-                    'result': f'Аренда офиса №{office_number} успешно отменена',
+                    'error': {
+                        'code': -32602,
+                        'message': 'Офис не найден'
+                    },
                     'id': id
                 }
-        
-        return {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32602,
-                'message': 'Офис не найден'
-            },
-            'id': id
-        }
+            
+            if not office['user_login']:
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': -32600,
+                        'message': 'Офис не арендован'
+                    },
+                    'id': id
+                }
+            
+            if office['user_login'] != login:
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': -32600,
+                        'message': 'Нельзя снять чужую аренду'
+                    },
+                    'id': id
+                }
+            
+            # Снимаем аренду
+            cursor.execute(
+                "UPDATE offices SET user_login = NULL WHERE number = %s",
+                (office_number,)
+            )
+            conn.commit()
+            
+            return {
+                'jsonrpc': '2.0',
+                'result': f'Аренда офиса №{office_number} успешно отменена',
+                'id': id
+            }
+            
+        except Exception as e:
+            conn.rollback()
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -32603,
+                    'message': f'Ошибка БД: {str(e)}'
+                },
+                'id': id
+            }
+        finally:
+            cursor.close()
+            conn.close()
     
     else:
         # Метод не найден
@@ -192,4 +309,17 @@ def check_auth():
 
 @lab6.route('/offices/')
 def get_offices():
-    return jsonify({'offices': offices})
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'Ошибка подключения к БД'})
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT number, user_login as user, price FROM offices ORDER BY number")
+        offices = cursor.fetchall()
+        return jsonify({'offices': offices})
+    except Exception as e:
+        return jsonify({'error': f'Ошибка БД: {str(e)}'})
+    finally:
+        cursor.close()
+        conn.close()
