@@ -2,12 +2,15 @@ from flask import Blueprint, render_template, request, session, jsonify
 
 lab6 = Blueprint('lab6', __name__)
 
-# Генерируем список офисов
+# Генерируем список офисов с разной стоимостью
 offices = []
 for i in range(1, 11):
+    # Стоимость рассчитываем по формуле: базовая цена + номер офиса * 1000
+    price = 5000 + i * 1000
     offices.append({
         'number': i,
-        'user': None  # арендатор
+        'user': None,  # арендатор
+        'price': price  # стоимость аренды
     })
 
 @lab6.route('/')
@@ -34,11 +37,22 @@ def api():
         
         # Находим офисы, арендованные текущим пользователем
         user_offices = [office for office in offices if office['user'] == login]
+        user_offices_info = []
+        total_cost = 0
+        
+        for office in user_offices:
+            user_offices_info.append({
+                'number': office['number'],
+                'price': office['price']
+            })
+            total_cost += office['price']
+        
         return {
             'jsonrpc': '2.0',
             'result': {
                 'login': login,
-                'offices': [office['number'] for office in user_offices]
+                'offices': user_offices_info,
+                'total_cost': total_cost
             },
             'id': id
         }
@@ -73,7 +87,7 @@ def api():
                 office['user'] = login
                 return {
                     'jsonrpc': '2.0',
-                    'result': 'Офис успешно арендован',
+                    'result': f'Офис №{office_number} успешно арендован за {office["price"]} руб./мес.',
                     'id': id
                 }
         
@@ -127,7 +141,7 @@ def api():
                 office['user'] = None
                 return {
                     'jsonrpc': '2.0',
-                    'result': 'Аренда успешно отменена',
+                    'result': f'Аренда офиса №{office_number} успешно отменена',
                     'id': id
                 }
         

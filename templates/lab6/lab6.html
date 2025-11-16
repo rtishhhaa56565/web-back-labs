@@ -21,6 +21,12 @@
                 <button class="logout-btn" onclick="logout()">Выйти</button>
             </div>
             <div id="my-bookings"></div>
+            <div id="total-cost" style="display: none;">
+                <div class="total-cost-info">
+                    <h4>Общая стоимость аренды:</h4>
+                    <p id="total-cost-amount"></p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -101,6 +107,13 @@
         border-radius: 4px;
         margin: 10px 0;
     }
+    .total-cost-info {
+        background: #d1ecf1;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+        border-left: 4px solid #17a2b8;
+    }
     .error {
         color: #dc3545;
         background: #f8d7da;
@@ -115,6 +128,16 @@
         border-radius: 4px;
         margin: 10px 0;
     }
+    .price {
+        font-weight: bold;
+        color: #28a745;
+    }
+    .office-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
 </style>
 {% endblock %}
 
@@ -122,6 +145,7 @@
 <script>
     let currentUser = null;
     let userBookings = [];
+    let totalCost = 0;
 
     // Функция загрузки списка офисов
     function loadOffices() {
@@ -138,7 +162,7 @@
             
             // Создаем элементы для каждого офиса
             offices.forEach(office => {
-                const isMyBooking = userBookings.includes(office.number);
+                const isMyBooking = userBookings.some(booking => booking.number === office.number);
                 const isOccupied = office.user !== null && !isMyBooking;
                 
                 // Создаем элемент div для офиса
@@ -153,9 +177,22 @@
                     officeElement.className = 'office available';
                 }
                 
+                // Создаем контейнер для информации об офисе
+                const officeInfo = document.createElement('div');
+                officeInfo.className = 'office-info';
+                
                 // Создаем заголовок
                 const title = document.createElement('h4');
                 title.textContent = `Офис №${office.number}`;
+                
+                // Создаем стоимость
+                const price = document.createElement('span');
+                price.className = 'price';
+                price.textContent = `${office.price} руб./мес.`;
+                
+                // Добавляем заголовок и стоимость в контейнер
+                officeInfo.appendChild(title);
+                officeInfo.appendChild(price);
                 
                 // Создаем параграф со статусом
                 const status = document.createElement('p');
@@ -167,8 +204,8 @@
                 }
                 status.textContent = `Статус: ${statusText}`;
                 
-                // Добавляем заголовок и статус в элемент офиса
-                officeElement.appendChild(title);
+                // Добавляем элементы в элемент офиса
+                officeElement.appendChild(officeInfo);
                 officeElement.appendChild(status);
                 
                 // Создаем кнопки в зависимости от статуса
@@ -249,6 +286,7 @@
         .then(data => {
             currentUser = null;
             userBookings = [];
+            totalCost = 0;
             updateUI();
             showMessage(data.message, 'success');
         });
@@ -276,7 +314,9 @@
                 showMessage('Ошибка: ' + data.error.message, 'error');
             } else {
                 userBookings = data.result.offices || [];
+                totalCost = data.result.total_cost || 0;
                 displayUserBookings();
+                displayTotalCost();
             }
         });
     }
@@ -286,13 +326,26 @@
         const myBookingsDiv = document.getElementById('my-bookings');
         if (userBookings.length > 0) {
             myBookingsDiv.innerHTML = '<h4>Мои арендованные офисы:</h4>' + 
-                userBookings.map(officeNum => 
-                    `<div>Офис №${officeNum} 
-                     <button class="cancel-btn" onclick="cancelBooking(${officeNum})">Освободить</button>
+                userBookings.map(office => 
+                    `<div>Офис №${office.number} - ${office.price} руб./мес.
+                     <button class="cancel-btn" onclick="cancelBooking(${office.number})">Освободить</button>
                      </div>`
                 ).join('');
         } else {
             myBookingsDiv.innerHTML = '<p>У вас нет арендованных офисов</p>';
+        }
+    }
+
+    // Функция отображения общей стоимости
+    function displayTotalCost() {
+        const totalCostDiv = document.getElementById('total-cost');
+        const totalCostAmount = document.getElementById('total-cost-amount');
+        
+        if (userBookings.length > 0) {
+            totalCostDiv.style.display = 'block';
+            totalCostAmount.textContent = `${totalCost} руб./мес.`;
+        } else {
+            totalCostDiv.style.display = 'none';
         }
     }
 
@@ -371,6 +424,7 @@
             userInfo.style.display = 'none';
             document.getElementById('offices-list').innerHTML = '';
             document.getElementById('my-bookings').innerHTML = '';
+            document.getElementById('total-cost').style.display = 'none';
         }
     }
 
