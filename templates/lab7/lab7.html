@@ -1,9 +1,21 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лабораторная работа 7 — REST API</title>
+</head>
+<body>
+    <h1>Лабораторная работа 7 — REST API</h1>
 
-{% block lab %}Лабораторная работа 7{% endblock %}
+    <p>Проверка API:</p>
+    <ul>
+        <li><a href="/lab7/rest-api/films/">GET /lab7/rest-api/films/</a></li>
+        <li><a href="/lab7/rest-api/films/0">GET /lab7/rest-api/films/0</a></li>
+    </ul>
 
-{% block script %}
-{% endblock %}
+    <p>Удаление (через консоль DevTools):</p>
+    <pre>fetch('/lab7/rest-api/films/0', { method: 'DELETE' })</pre>
 
-{% block main %}
-{% endblock %}
+    <p><a href="/">На главную</a></p>
+</body>
+</html>

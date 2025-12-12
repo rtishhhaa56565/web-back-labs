@@ -5,7 +5,8 @@ lab7 = Blueprint('lab7', __name__)
 
 @lab7.route('/')
 def main():
-    return render_template('lab7/index.html')
+    # шаблон: templates/lab7/lab7.html
+    return render_template('lab7/lab7.html')
 
 
 # Список фильмов (хранится в памяти)
@@ -65,17 +66,44 @@ films = [
 ]
 
 
-# REST API — получение всех фильмов
+# GET — все фильмы
 @lab7.route('/rest-api/films/', methods=['GET'])
 def get_films():
     return jsonify(films)
 
 
-# REST API — получение одного фильма по id
+# GET — один фильм
 @lab7.route('/rest-api/films/<int:film_id>', methods=['GET'])
 def get_film(film_id):
-    # Проверка корректности id
+    if film_id < 0 or film_id >= len(films):
+        abort(404)
+    return jsonify(films[film_id])
+
+
+# DELETE — удаление фильма
+@lab7.route('/rest-api/films/<int:film_id>', methods=['DELETE'])
+def delete_film(film_id):
     if film_id < 0 or film_id >= len(films):
         abort(404)
 
-    return jsonify(films[film_id])
+    films.pop(film_id)
+    return '', 204
+
+
+# POST — добавление фильма
+@lab7.route('/rest-api/films/', methods=['POST'])
+def add_film():
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    new_film = {
+        "title": data.get('title', ''),
+        "title_ru": data.get('title_ru', ''),
+        "year": int(data.get('year', 0)),
+        "description": data.get('description', '')
+    }
+
+    films.append(new_film)
+    return jsonify({"id": len(films) - 1})
