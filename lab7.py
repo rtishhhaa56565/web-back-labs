@@ -29,31 +29,34 @@ def _parse_year(value) -> int:
         return 0
 
 
-def _validate_description(description: str):
-    # если description пустое или только пробелы — ошибка 400
+def _validate_description(description):
     if description is None or str(description).strip() == '':
         return jsonify({"description": "Описание не должно быть пустым"}), 400
     return None
 
 
+# GET — все фильмы
 @lab7.route('/rest-api/films/', methods=['GET'])
 def get_films():
     return jsonify(films)
 
 
+# GET — один фильм
 @lab7.route('/rest-api/films/<int:film_id>', methods=['GET'])
 def get_film(film_id):
     _validate_id(film_id)
     return jsonify(films[film_id])
 
 
+# DELETE — удаление
 @lab7.route('/rest-api/films/<int:film_id>', methods=['DELETE'])
 def delete_film(film_id):
     _validate_id(film_id)
     films.pop(film_id)
-    return '', 204
+    return ('', 204)
 
 
+# PUT — редактирование
 @lab7.route('/rest-api/films/<int:film_id>', methods=['PUT'])
 def edit_film(film_id):
     _validate_id(film_id)
@@ -78,6 +81,7 @@ def edit_film(film_id):
     return jsonify(updated_film)
 
 
+# POST — добавление
 @lab7.route('/rest-api/films/', methods=['POST'])
 def add_film():
     data = request.get_json(silent=True)
@@ -97,4 +101,5 @@ def add_film():
     }
 
     films.append(new_film)
-    return jsonify({"id": len(films) - 1}), 201
+    new_id = len(films) - 1
+    return jsonify({"id": new_id}), 201
