@@ -1,21 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Лабораторная работа 7 — REST API</title>
+  <meta charset="UTF-8">
+  <title>Лабораторная 7 — Фильмы</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f2f2f2; }
+    .btn { padding: 6px 10px; cursor: pointer; }
+    .btn-danger { background: #d32f2f; color: white; border: none; }
+    .btn-edit { background: #1976d2; color: white; border: none; }
+    .btn-add { background: #2e7d32; color: white; border: none; }
+    .topbar { display: flex; gap: 10px; align-items: center; }
+    .muted { color: #666; font-size: 14px; }
+  </style>
 </head>
 <body>
-    <h1>Лабораторная работа 7 — REST API</h1>
+  <div class="topbar">
+    <h1 style="margin:0;">Лабораторная работа 7 — Фильмы (REST)</h1>
+    <button class="btn btn-add" id="add-film-btn">Добавить фильм</button>
+    <a href="/" class="muted">На главную</a>
+  </div>
 
-    <p>Проверка API:</p>
-    <ul>
-        <li><a href="/lab7/rest-api/films/">GET /lab7/rest-api/films/</a></li>
-        <li><a href="/lab7/rest-api/films/0">GET /lab7/rest-api/films/0</a></li>
-    </ul>
+  <p class="muted">Данные загружаются с бэкенда по адресу <code>/lab7/rest-api/films/</code></p>
 
-    <p>Удаление (через консоль DevTools):</p>
-    <pre>fetch('/lab7/rest-api/films/0', { method: 'DELETE' })</pre>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Название (RU)</th>
+        <th>Название (EN)</th>
+        <th>Год</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody id="films-tbody">
+      <!-- строки добавит JS -->
+    </tbody>
+  </table>
 
-    <p><a href="/">На главную</a></p>
+  <script src="/static/lab7/main.js"></script>
 </body>
 </html>

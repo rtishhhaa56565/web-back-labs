@@ -13,31 +13,42 @@ films = [
         "title": "Fight Club",
         "title_ru": "Бойцовский клуб",
         "year": 1999,
-        "description": "..."
+        "description": (
+            "Сотрудник страховой компании, страдающий хронической бессонницей, "
+            "встречает харизматичного торговца мылом Тайлера Дёрдена."
+        )
     },
     {
         "title": "The Matrix",
         "title_ru": "Матрица",
         "year": 1999,
-        "description": "..."
+        "description": (
+            "Хакер Нео узнаёт, что реальность — иллюзия, созданная машинами."
+        )
     },
     {
         "title": "Gladiator",
         "title_ru": "Гладиатор",
         "year": 2000,
-        "description": "..."
+        "description": (
+            "Римский полководец Максимус становится гладиатором и ищет мести."
+        )
     },
     {
         "title": "The Dark Knight",
         "title_ru": "Тёмный рыцарь",
         "year": 2008,
-        "description": "..."
+        "description": (
+            "Бэтмен противостоит Джокеру, который сеет хаос в Готэме."
+        )
     },
     {
         "title": "Parasite",
         "title_ru": "Паразиты",
         "year": 2019,
-        "description": "..."
+        "description": (
+            "Бедная семья внедряется в дом богатых работодателей."
+        )
     }
 ]
 
@@ -54,20 +65,17 @@ def _parse_year(value) -> int:
         return 0
 
 
-# GET — все фильмы
 @lab7.route('/rest-api/films/', methods=['GET'])
 def get_films():
     return jsonify(films)
 
 
-# GET — один фильм
 @lab7.route('/rest-api/films/<int:film_id>', methods=['GET'])
 def get_film(film_id):
     _validate_id(film_id)
     return jsonify(films[film_id])
 
 
-# DELETE — удаление фильма
 @lab7.route('/rest-api/films/<int:film_id>', methods=['DELETE'])
 def delete_film(film_id):
     _validate_id(film_id)
@@ -75,7 +83,6 @@ def delete_film(film_id):
     return '', 204
 
 
-# PUT — редактирование фильма
 @lab7.route('/rest-api/films/<int:film_id>', methods=['PUT'])
 def edit_film(film_id):
     _validate_id(film_id)
@@ -95,7 +102,6 @@ def edit_film(film_id):
     return jsonify(updated_film)
 
 
-# POST — добавление нового фильма (по методичке: вернуть индекс нового элемента)
 @lab7.route('/rest-api/films/', methods=['POST'])
 def add_film():
     data = request.get_json(silent=True)
@@ -110,6 +116,4 @@ def add_film():
     }
 
     films.append(new_film)
-
-    new_id = len(films) - 1
-    return jsonify({"id": new_id}), 201
+    return jsonify({"id": len(films) - 1}), 201
