@@ -20,15 +20,14 @@ const inputDescription = document.getElementById('description');
 function showError(text) {
   if (!text) {
     errorBox.style.display = 'none';
-    errorBox.textContent = '';
+    errorBox.innerHTML = '';
     return;
   }
-  errorBox.textContent = text;
+  errorBox.innerHTML = text;
   errorBox.style.display = 'block';
 }
 
 function clearErrorOnShowModal() {
-  // очистка сообщения при открытии модального окна (как в задании)
   showError('');
 }
 
@@ -49,16 +48,16 @@ function escapeHtml(text) {
 function renderFilms(films) {
   tbody.innerHTML = '';
 
-  films.forEach((film, index) => {
+  films.forEach((film) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${index}</td>
+      <td>${escapeHtml(film.id)}</td>
       <td>${escapeHtml(film.title_ru)}</td>
       <td>${escapeHtml(film.title)}</td>
       <td>${escapeHtml(film.year)}</td>
       <td>
-        <button class="btn btn-edit" data-action="edit" data-id="${index}">Редактировать</button>
-        <button class="btn btn-danger" data-action="delete" data-id="${index}">Удалить</button>
+        <button class="btn btn-edit" data-action="edit" data-id="${film.id}">Редактировать</button>
+        <button class="btn btn-danger" data-action="delete" data-id="${film.id}">Удалить</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -72,6 +71,7 @@ async function refresh() {
 
 async function deleteFilm(id) {
   const res = await fetch(`/lab7/rest-api/films/${id}`, { method: 'DELETE' });
+
   if (res.status === 204) {
     await refresh();
   } else if (res.status === 404) {
@@ -81,9 +81,14 @@ async function deleteFilm(id) {
   }
 }
 
+async function fetchFilm(id) {
+  const res = await fetch(`/lab7/rest-api/films/${id}`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
 function openModal(mode, film = null, id = null) {
   clearErrorOnShowModal();
-
   currentMode = mode;
   currentId = id;
 
@@ -108,6 +113,34 @@ function closeModal() {
   modal.close();
 }
 
+function formatErrors(errors) {
+  // errors — объект {field: message}
+  const order = ['title_ru', 'title', 'year', 'description'];
+  const labels = {
+    title_ru: 'Русское название',
+    title: 'Название (оригинал)',
+    year: 'Год',
+    description: 'Описание'
+  };
+
+  let items = [];
+  for (const key of order) {
+    if (errors[key]) {
+      items.push(`<li><b>${labels[key]}:</b> ${escapeHtml(errors[key])}</li>`);
+    }
+  }
+
+  // если прилетели какие-то другие ошибки
+  for (const key in errors) {
+    if (!order.includes(key)) {
+      items.push(`<li><b>${escapeHtml(key)}:</b> ${escapeHtml(errors[key])}</li>`);
+    }
+  }
+
+  if (items.length === 0) return '';
+  return `<ul style="margin:0; padding-left:18px;">${items.join('')}</ul>`;
+}
+
 async function sendFilm() {
   const payload = {
     title_ru: inputTitleRu.value,
@@ -128,18 +161,17 @@ async function sendFilm() {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
-  }).then(response => {
+  }).then(async (response) => {
     if (response.ok) {
       return {}; // успех
     }
-    return response.json(); // ошибки с бэка
-  }).then(errors => {
-    if (errors.description) {
-      showError(errors.description);
+    return await response.json(); // ошибки с бэка
+  }).then((errors) => {
+    const html = formatErrors(errors);
+    if (html) {
+      showError(html);
       return;
     }
-
-    // если ошибок нет — значит успех
     closeModal();
     refresh();
   });
@@ -151,7 +183,7 @@ tbody.addEventListener('click', async (e) => {
   if (!btn) return;
 
   const action = btn.dataset.action;
-  const id = btn.dataset.id;
+  const id = Number(btn.dataset.id);
 
   if (action === 'delete') {
     if (confirm(`Удалить фильм #${id}?`)) {
@@ -160,18 +192,16 @@ tbody.addEventListener('click', async (e) => {
   }
 
   if (action === 'edit') {
-    const films = await fetchFilms();
-    const film = films[Number(id)];
+    const film = await fetchFilm(id);
     if (!film) {
       showError('Фильм не найден');
       return;
     }
-    openModal('edit', film, Number(id));
+    openModal('edit', film, id);
   }
 });
 
 addBtn.addEventListener('click', () => openModal('add'));
-
 cancelBtn.addEventListener('click', closeModal);
 saveBtn.addEventListener('click', sendFilm);
 
