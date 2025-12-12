@@ -9,47 +9,11 @@ def main():
 
 
 films = [
-    {
-        "title": "Fight Club",
-        "title_ru": "Бойцовский клуб",
-        "year": 1999,
-        "description": (
-            "Сотрудник страховой компании, страдающий хронической бессонницей, "
-            "встречает харизматичного торговца мылом Тайлера Дёрдена."
-        )
-    },
-    {
-        "title": "The Matrix",
-        "title_ru": "Матрица",
-        "year": 1999,
-        "description": (
-            "Хакер Нео узнаёт, что реальность — иллюзия, созданная машинами."
-        )
-    },
-    {
-        "title": "Gladiator",
-        "title_ru": "Гладиатор",
-        "year": 2000,
-        "description": (
-            "Римский полководец Максимус становится гладиатором и ищет мести."
-        )
-    },
-    {
-        "title": "The Dark Knight",
-        "title_ru": "Тёмный рыцарь",
-        "year": 2008,
-        "description": (
-            "Бэтмен противостоит Джокеру, который сеет хаос в Готэме."
-        )
-    },
-    {
-        "title": "Parasite",
-        "title_ru": "Паразиты",
-        "year": 2019,
-        "description": (
-            "Бедная семья внедряется в дом богатых работодателей."
-        )
-    }
+    {"title": "Fight Club", "title_ru": "Бойцовский клуб", "year": 1999, "description": "…"},
+    {"title": "The Matrix", "title_ru": "Матрица", "year": 1999, "description": "…"},
+    {"title": "Gladiator", "title_ru": "Гладиатор", "year": 2000, "description": "…"},
+    {"title": "The Dark Knight", "title_ru": "Тёмный рыцарь", "year": 2008, "description": "…"},
+    {"title": "Parasite", "title_ru": "Паразиты", "year": 2019, "description": "…"},
 ]
 
 
@@ -63,6 +27,13 @@ def _parse_year(value) -> int:
         return int(value)
     except (TypeError, ValueError):
         return 0
+
+
+def _validate_description(description: str):
+    # если description пустое или только пробелы — ошибка 400
+    if description is None or str(description).strip() == '':
+        return jsonify({"description": "Описание не должно быть пустым"}), 400
+    return None
 
 
 @lab7.route('/rest-api/films/', methods=['GET'])
@@ -91,11 +62,16 @@ def edit_film(film_id):
     if data is None:
         return jsonify({"error": "Request body must be JSON"}), 400
 
+    description = data.get('description', '')
+    error = _validate_description(description)
+    if error:
+        return error
+
     updated_film = {
         "title": data.get('title', ''),
         "title_ru": data.get('title_ru', ''),
         "year": _parse_year(data.get('year', 0)),
-        "description": data.get('description', '')
+        "description": description
     }
 
     films[film_id] = updated_film
@@ -108,11 +84,16 @@ def add_film():
     if data is None:
         return jsonify({"error": "Request body must be JSON"}), 400
 
+    description = data.get('description', '')
+    error = _validate_description(description)
+    if error:
+        return error
+
     new_film = {
         "title": data.get('title', ''),
         "title_ru": data.get('title_ru', ''),
         "year": _parse_year(data.get('year', 0)),
-        "description": data.get('description', '')
+        "description": description
     }
 
     films.append(new_film)
