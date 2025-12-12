@@ -5,7 +5,7 @@ lab7 = Blueprint('lab7', __name__)
 
 @lab7.route('/')
 def main():
-    # шаблон: templates/lab7/lab7.html
+    # если у тебя шаблон лежит тут: templates/lab7/lab7.html
     return render_template('lab7/lab7.html')
 
 
@@ -66,6 +66,19 @@ films = [
 ]
 
 
+def _validate_id(film_id: int) -> None:
+    """Проверка корректности id. Если не ок — 404."""
+    if film_id < 0 or film_id >= len(films):
+        abort(404)
+
+
+def _parse_year(value) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
 # GET — все фильмы
 @lab7.route('/rest-api/films/', methods=['GET'])
 def get_films():
@@ -75,17 +88,14 @@ def get_films():
 # GET — один фильм
 @lab7.route('/rest-api/films/<int:film_id>', methods=['GET'])
 def get_film(film_id):
-    if film_id < 0 or film_id >= len(films):
-        abort(404)
+    _validate_id(film_id)
     return jsonify(films[film_id])
 
 
 # DELETE — удаление фильма
 @lab7.route('/rest-api/films/<int:film_id>', methods=['DELETE'])
 def delete_film(film_id):
-    if film_id < 0 or film_id >= len(films):
-        abort(404)
-
+    _validate_id(film_id)
     films.pop(film_id)
     return '', 204
 
@@ -94,16 +104,37 @@ def delete_film(film_id):
 @lab7.route('/rest-api/films/', methods=['POST'])
 def add_film():
     data = request.get_json(silent=True)
-
     if data is None:
         return jsonify({"error": "Request body must be JSON"}), 400
 
     new_film = {
         "title": data.get('title', ''),
         "title_ru": data.get('title_ru', ''),
-        "year": int(data.get('year', 0)),
+        "year": _parse_year(data.get('year', 0)),
         "description": data.get('description', '')
     }
 
     films.append(new_film)
-    return jsonify({"id": len(films) - 1})
+    return jsonify({"id": len(films) - 1}), 201
+
+
+# PUT — редактирование фильма
+@lab7.route('/rest-api/films/<int:film_id>', methods=['PUT'])
+def edit_film(film_id):
+    _validate_id(film_id)
+
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    updated_film = {
+        "title": data.get('title', ''),
+        "title_ru": data.get('title_ru', ''),
+        "year": _parse_year(data.get('year', 0)),
+        "description": data.get('description', '')
+    }
+
+    films[film_id] = updated_film
+
+    # По методичке: возвращаем сам объект обратно
+    return jsonify(updated_film)
