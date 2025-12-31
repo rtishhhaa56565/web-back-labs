@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Лабораторная 9{% endblock %}
+{% block lab %}Лабораторная работа 9{% endblock %}
+
+{% block scripts %}
+<style>
+  .lab9-wrap { margin-top: 10px; }
+  .lab9-stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: #f6f8fa;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e6e6e6;
+  }
+  .lab9-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+  .gift {
+    user-select: none;
+    height: 90px;
+    display: grid;
+    place-items: center;
+    font-size: 44px;
+    background: white;
+    border: 1px solid #e6e6e6;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .gift:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+  .gift:active { transform: translateY(0px); box-shadow: none; }
+
+  .gift.opened {
+    cursor: not-allowed;
+    opacity: .55;
+    filter: grayscale(0.3);
+  }
+
+  .lab9-result {
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px dashed #c9c9c9;
+    border-radius: 12px;
+    background: #fff;
+    min-height: 60px;
+  }
+
+  @media (max-width: 900px) {
+    .lab9-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .lab9-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="lab9-wrap">
+  <h2>🎄 Новогодние подарки</h2>
+
+  <div class="lab9-stats">
+    <div>Можно открыть: <strong>3</strong></div>
+    <div>Открыто: <strong><span id="opened-count">0</span> / 3</strong></div>
+  </div>
+
+  <div id="gifts" class="lab9-grid"></div>
+
+  <div id="result" class="lab9-result">
+    Нажми на подарок 🎁
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='lab9/main.js') }}"></script>
+{% endblock %}
