@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Лабораторная 8{% endblock %}
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+<h2>Лабораторная 8 — Авторизация</h2>
+
+<p>Текущий пользователь: <strong>{{ username }}</strong></p>
+
+{% if username == 'anonymous' %}
+  <p>
+    <a href="/lab8/login">Войти</a> |
+    <a href="/lab8/register">Регистрация</a>
+  </p>
+{% else %}
+  <p>
+    ✅ Вы авторизованы как <strong>{{ username }}</strong>
+  </p>
+  <p>
+    <a href="/lab8/logout">Выйти</a>
+  </p>
+  <p>
+    Перейти в ЛР-9: <a href="/lab9/">Новогодние подарки</a>
+  </p>
+{% endif %}
+{% endblock %}

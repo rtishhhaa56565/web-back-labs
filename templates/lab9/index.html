@@ -6,6 +6,7 @@
 {% block scripts %}
 <style>
   .lab9-wrap { margin-top: 10px; }
+
   .lab9-stats {
     display: flex;
     gap: 16px;
@@ -16,12 +17,14 @@
     border-radius: 12px;
     border: 1px solid #e6e6e6;
   }
+
   .lab9-grid {
     margin-top: 16px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 14px;
   }
+
   .gift {
     user-select: none;
     height: 90px;
@@ -34,13 +37,38 @@
     cursor: pointer;
     transition: transform .08s ease, box-shadow .08s ease;
   }
-  .gift:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+
+  .gift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  }
   .gift:active { transform: translateY(0px); box-shadow: none; }
 
   .gift.opened {
     cursor: not-allowed;
     opacity: .55;
     filter: grayscale(0.3);
+  }
+
+  /* ⭐ Кнопка "Дед Мороз" (видна только авторизованным) */
+  #ded-moroz-btn {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(135deg, #d32f2f, #ff5252);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  #ded-moroz-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(211, 47, 47, 0.45);
+  }
+  #ded-moroz-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 
   .lab9-result {
@@ -68,6 +96,11 @@
   <div class="lab9-stats">
     <div>Можно открыть: <strong>3</strong></div>
     <div>Открыто: <strong><span id="opened-count">0</span> / 3</strong></div>
+
+    {# Кнопка только для авторизованных. lab9.py должен передавать authed=True/False #}
+    {% if authed %}
+      <button id="ded-moroz-btn" type="button">🎅 Дед Мороз</button>
+    {% endif %}
   </div>
 
   <div id="gifts" class="lab9-grid"></div>

@@ -1,6 +1,7 @@
-from flask import Flask, url_for, request, redirect, abort, render_template
+from flask import Flask, request
 import datetime
 import os
+
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
@@ -9,6 +10,7 @@ from lab5 import lab5
 from lab6 import lab6
 from lab7 import lab7
 from lab8 import lab8
+from lab9 import lab9
 
 app = Flask(__name__)
 
@@ -19,24 +21,23 @@ try:
 except Exception:
     pass
 
-app.secret_key = 'your_secret_key_here_12345'
-
-# Чтение секретного ключа из переменной окружения SECRET_KEY
-# Если переменной нет, используется значение по умолчанию
+# Ключ для сессий (достаточно одного способа)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
 
-# Чтение типа базы данных из переменной окружения DB_TYPE
-# Если переменной нет, используется значение по умолчанию 'postgres'
+# (опционально) тип БД
 app.config['DB_TYPE'] = os.environ.get('DB_TYPE', 'postgres')
 
-app.register_blueprint(lab1, url_prefix='/lab1')
-app.register_blueprint(lab2, url_prefix='/lab2')
-app.register_blueprint(lab3, url_prefix='/lab3')
-app.register_blueprint(lab4, url_prefix='/lab4')
-app.register_blueprint(lab5, url_prefix='/lab5')
-app.register_blueprint(lab6, url_prefix='/lab6')  
-app.register_blueprint(lab7, url_prefix='/lab7')
-app.register_blueprint(lab8, url_prefix='/lab8')    
+# ✅ Регистрируем blueprint'ы БЕЗ url_prefix,
+# потому что префиксы уже зашиты внутри labX.py (например, /lab9/)
+app.register_blueprint(lab1)
+app.register_blueprint(lab2)
+app.register_blueprint(lab3)
+app.register_blueprint(lab4)
+app.register_blueprint(lab5)
+app.register_blueprint(lab6)
+app.register_blueprint(lab7)
+app.register_blueprint(lab8)
+app.register_blueprint(lab9)
 
 # Глобальная переменная для хранения лога 404 ошибок
 error_404_log = []
@@ -56,7 +57,7 @@ def index():
         <header>
             <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
         </header>
-        
+
         <main>
             <nav>
                 <ul>
@@ -67,7 +68,9 @@ def index():
                     <li><a href="/lab5/">Пятая лабораторная</a></li>
                     <li><a href="/lab6/">Шестая лабораторная</a></li>
                     <li><a href="/lab7/">Седьмая лабораторная (REST API)</a></li>
-                    <li><a href="/lab7/">Восьмая лабораторная</a></li>
+                    <li><a href="/lab8/">Восьмая лабораторная</a></li>
+                    <li><a href="/lab9/">Девятая лабораторная</a></li>
+
                     <li><a href="/lab2/a">Лабораторная 2 - без слэша</a></li>
                     <li><a href="/lab2/a/">Лабораторная 2 - со слэшем</a></li>
                     <li><a href="/lab2/template">Шаблон с данными</a></li>
@@ -78,7 +81,7 @@ def index():
                 </ul>
             </nav>
         </main>
-        
+
         <footer>
             <p>Арышева Арина Юрьевна, ФБИ-34, 3 курс, 2025</p>
         </footer>
@@ -92,7 +95,6 @@ def favicon():
 
 @app.route('/test-favicons')
 def test_favicons():
-    """Страница для тестирования фавиконок"""
     return """
     <!DOCTYPE html>
     <html>
@@ -101,7 +103,7 @@ def test_favicons():
     </head>
     <body>
         <h1>Тест доступности фавиконок</h1>
-        
+
         <h2>Проверка ссылок:</h2>
         <ul>
             <li><a href="/static/favicons/favicon.ico">favicon.ico</a></li>
@@ -141,7 +143,6 @@ def im_a_teapot():
 def created():
     return "Ресурс успешно создан", 201
 
-# Обработчики ошибок
 @app.errorhandler(500)
 def internal_server_error(error):
     return """
@@ -159,25 +160,16 @@ def internal_server_error(error):
     </html>
     """, 500
 
-# Улучшенный обработчик ошибки 404
 @app.errorhandler(404)
 def page_not_found(error):
-    # Получаем информацию о запросе
     client_ip = request.remote_addr
     access_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     requested_url = request.url
 
-    # Добавляем запись в лог
-    log_entry = {
-        'ip': client_ip,
-        'date': access_date,
-        'url': requested_url
-    }
-    error_404_log.append(log_entry)
+    error_404_log.append({'ip': client_ip, 'date': access_date, 'url': requested_url})
 
-    # Формируем HTML страницы
     log_html = ""
-    for entry in reversed(error_404_log[-10:]):  # Показываем последние 10 записей
+    for entry in reversed(error_404_log[-10:]):
         log_html += f"<tr><td>{entry['ip']}</td><td>{entry['date']}</td><td>{entry['url']}</td></tr>"
 
     return f"""
@@ -252,19 +244,19 @@ def page_not_found(error):
         <div class="error-container">
             <h1 class="error-code">404</h1>
             <h2 class="error-title">Страница не найдена</h2>
-            
+
             <div class="info-section">
                 <h3>Информация о запросе:</h3>
                 <p><strong>IP-адрес пользователя:</strong> {client_ip}</p>
                 <p><strong>Дата и время доступа:</strong> {access_date}</p>
                 <p><strong>Запрошенный URL:</strong> {requested_url}</p>
             </div>
-            
+
             <p>Запрашиваемая страница не существует. Пожалуйста, проверьте URL или перейдите на главную страницу.</p>
-            
+
             <a href="/" class="home-link">Перейти на главную страницу</a>
         </div>
-        
+
         <div class="log-section">
             <h3>Лог 404 ошибок (последние 10 записей):</h3>
             <table>

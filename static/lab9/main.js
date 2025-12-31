@@ -1,48 +1,94 @@
 const giftsContainer = document.getElementById("gifts");
 const openedCountEl = document.getElementById("opened-count");
 const resultEl = document.getElementById("result");
+const dedBtn = document.getElementById("ded-moroz-btn");
 
-let openedCount = 0;
+const TOTAL_GIFTS = 10;
 
-const wishes = [
-  "🎉 Пусть в новом году будет больше радостных моментов, чем поводов для волнений!",
-  "✨ Желаю уверенности в себе, спокойствия и вдохновения каждый день.",
-  "🎁 Пусть все усилия принесут результат, а мечты станут целями и сбудутся.",
-  "❄️ Пусть новый год будет тёплым — даже в самые холодные дни.",
-  "🌟 Желаю успехов в учёбе, лёгких дедлайнов и понятных преподавателей 😉",
-  "🍀 Пусть удача будет рядом во всех начинаниях.",
-  "💫 Желаю баланса между работой, учёбой и отдыхом.",
-  "🎊 Пусть новый год принесёт приятные сюрпризы и хорошие новости.",
-  "❤️ Пусть рядом будут люди, с которыми комфортно и спокойно.",
-  "🎄 Желаю веры в себя и в то, что всё обязательно получится!"
-];
-
-// рисуем 10 подарков
-for (let i = 1; i <= 10; i++) {
+function makeGift(id) {
   const gift = document.createElement("div");
   gift.className = "gift";
   gift.innerText = "🎁";
-  gift.dataset.id = String(i);
+  gift.dataset.id = String(id);
+  gift.addEventListener("click", () => openGift(id, gift));
+  return gift;
+}
 
-  gift.addEventListener("click", () => {
-    // нельзя открыть один и тот же подарок повторно
-    if (gift.classList.contains("opened")) return;
+function markOpened(giftEl) {
+  giftEl.classList.add("opened");
+  giftEl.innerText = "✅";
+}
 
-    // если уже открыто 3 — больше нельзя
-    if (openedCount >= 3) {
-      resultEl.innerHTML = "⛔ Вы уже открыли 3 подарка. Больше нельзя!";
-      return;
+function markAuthOnly(giftEl) {
+  // визуальная подсказка, что подарок "закрыт"
+  giftEl.style.opacity = "0.7";
+  giftEl.title = "Только для авторизованных";
+}
+
+async function loadState() {
+  const res = await fetch("/lab9/state");
+  const data = await res.json();
+
+  if (!data.ok) return;
+
+  openedCountEl.textContent = String(data.opened_count);
+
+  // отрисовка подарков
+  giftsContainer.innerHTML = "";
+  for (let i = 1; i <= TOTAL_GIFTS; i++) {
+    const giftEl = makeGift(i);
+
+    // если подарок уже пустой (общий) — показываем как открытый
+    if (data.empty_gifts.includes(i)) {
+      markOpened(giftEl);
     }
 
-    gift.classList.add("opened");
-    gift.innerText = "🎉";
+    // если подарок только для авторизованных и пользователь не авторизован
+    if (!data.authed && data.auth_only_gifts.includes(i)) {
+      markAuthOnly(giftEl);
+    }
 
-    openedCount++;
-    openedCountEl.textContent = String(openedCount);
+    giftsContainer.appendChild(giftEl);
+  }
+}
 
-    const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
-    resultEl.innerHTML = `<strong>Пожелание:</strong> ${randomWish}`;
+async function openGift(id, giftEl) {
+  // если уже открыт на клиенте
+  if (giftEl.classList.contains("opened")) return;
+
+  const res = await fetch("/lab9/open", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id })
   });
 
-  giftsContainer.appendChild(gift);
+  const data = await res.json();
+
+  if (!res.ok || !data.ok) {
+    resultEl.innerHTML = `⛔ ${data.error || "Ошибка"}`;
+    return;
+  }
+
+  markOpened(giftEl);
+  openedCountEl.textContent = String(data.opened_count);
+  resultEl.innerHTML = `<strong>Подарок #${data.gift_id}</strong>: ${data.wish}`;
 }
+
+async function resetGifts() {
+  const res = await fetch("/lab9/reset", { method: "POST" });
+  const data = await res.json();
+
+  if (!res.ok || !data.ok) {
+    resultEl.innerHTML = `⛔ ${data.error || "Ошибка"}`;
+    return;
+  }
+
+  resultEl.innerHTML = "🎅 Дед Мороз наполнил все коробки заново!";
+  await loadState(); // перерисовать состояние
+}
+
+if (dedBtn) {
+  dedBtn.addEventListener("click", resetGifts);
+}
+
+loadState();
